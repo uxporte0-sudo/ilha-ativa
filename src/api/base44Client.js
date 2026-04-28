@@ -1,1 +1,41 @@
-export const db = { auth: { isAuthenticated: async ()=>false, me: async ()=>null }, entities: new Proxy({}, { get:()=>({ filter:async()=>[], get:async()=>null, create:async()=>({}), update:async()=>({}), delete:async()=>({}) }) }), integrations:{ Core:{ UploadFile:async()=>({ file_url:'' }) } } }; export const base44=db; export default db;
+const emptyEntity = {
+  list: async () => [],
+  filter: async () => [],
+  get: async () => null,
+  create: async (data = {}) => ({
+    id: `local-${Date.now()}`,
+    created_date: new Date().toISOString(),
+    ...data,
+  }),
+  update: async (id, data = {}) => ({
+    id,
+    updated_date: new Date().toISOString(),
+    ...data,
+  }),
+  delete: async (id) => ({ id }),
+};
+
+export const db = {
+  auth: {
+    isAuthenticated: async () => true,
+    me: async () => ({
+      id: 'local-ui-user',
+      full_name: 'Usuario Local',
+      email: 'local@example.com',
+      role: 'admin',
+    }),
+    logout: () => {},
+    redirectToLogin: () => {},
+  },
+  entities: new Proxy({}, { get: () => emptyEntity }),
+  integrations: {
+    Core: {
+      UploadFile: async ({ file } = {}) => ({
+        file_url: file ? URL.createObjectURL(file) : '',
+      }),
+    },
+  },
+};
+
+export const base44 = db;
+export default db;
