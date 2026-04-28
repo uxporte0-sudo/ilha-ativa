@@ -1,0 +1,57 @@
+{
+  "name": "RepairRequest",
+  "type": "object",
+  "properties": {
+    "court_id": {
+      "type": "string",
+      "description": "ID da quadra"
+    },
+    "court_name": {
+      "type": "string",
+      "description": "Nome da quadra"
+    },
+    "title": {
+      "type": "string",
+      "description": "T\u00edtulo do problema"
+    },
+    "description": {
+      "type": "string",
+      "description": "Descri\u00e7\u00e3o detalhada do reparo necess\u00e1rio"
+    },
+    "priority": {
+      "type": "string",
+      "enum": [
+        "baixa",
+        "media",
+        "alta",
+        "urgente"
+      ],
+      "default": "media",
+      "description": "Prioridade do reparo"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "aberto",
+        "em_andamento",
+        "concluido"
+      ],
+      "default": "aberto",
+      "description": "Status da solicita\u00e7\u00e3o"
+    },
+    "image_url": {
+      "type": "string",
+      "description": "Foto do problema"
+    },
+    "requester_name": {
+      "type": "string",
+      "description": "Nome do solicitante"
+    }
+  },
+  "required": [
+    "court_id",
+    "court_name",
+    "title",
+    "description"
+  ]
+}

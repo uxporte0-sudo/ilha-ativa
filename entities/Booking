@@ -1,0 +1,79 @@
+{
+  "name": "Booking",
+  "type": "object",
+  "properties": {
+    "court_id": {
+      "type": "string",
+      "description": "ID da quadra reservada"
+    },
+    "court_name": {
+      "type": "string",
+      "description": "Nome da quadra"
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "description": "Data da reserva"
+    },
+    "time_slot": {
+      "type": "string",
+      "enum": [
+        "06:00",
+        "07:00",
+        "08:00",
+        "09:00",
+        "10:00",
+        "11:00",
+        "12:00",
+        "13:00",
+        "14:00",
+        "15:00",
+        "16:00",
+        "17:00",
+        "18:00",
+        "19:00",
+        "20:00",
+        "21:00"
+      ],
+      "description": "Hor\u00e1rio da reserva"
+    },
+    "duration": {
+      "type": "string",
+      "enum": [
+        "1h",
+        "2h"
+      ],
+      "default": "1h",
+      "description": "Dura\u00e7\u00e3o da reserva"
+    },
+    "purpose": {
+      "type": "string",
+      "description": "Finalidade do uso"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pendente",
+        "confirmado",
+        "cancelado"
+      ],
+      "default": "pendente",
+      "description": "Status da reserva"
+    },
+    "requester_name": {
+      "type": "string",
+      "description": "Nome do solicitante"
+    },
+    "requester_phone": {
+      "type": "string",
+      "description": "Telefone do solicitante"
+    }
+  },
+  "required": [
+    "court_id",
+    "court_name",
+    "date",
+    "time_slot",
+    "requester_name"
+  ]
+}

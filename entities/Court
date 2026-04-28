@@ -1,0 +1,49 @@
+{
+  "name": "Court",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Nome da quadra"
+    },
+    "location": {
+      "type": "string",
+      "description": "Endere\u00e7o/localiza\u00e7\u00e3o da quadra"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "futebol",
+        "basquete",
+        "volei",
+        "tenis",
+        "poliesportiva"
+      ],
+      "description": "Tipo de quadra"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "disponivel",
+        "em_uso",
+        "em_manutencao",
+        "interditada"
+      ],
+      "default": "disponivel",
+      "description": "Status atual da quadra"
+    },
+    "image_url": {
+      "type": "string",
+      "description": "Foto da quadra"
+    },
+    "description": {
+      "type": "string",
+      "description": "Descri\u00e7\u00e3o e detalhes da quadra"
+    }
+  },
+  "required": [
+    "name",
+    "location",
+    "type"
+  ]
+}

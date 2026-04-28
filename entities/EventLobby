@@ -1,0 +1,40 @@
+{
+  "name": "EventLobby",
+  "type": "object",
+  "properties": {
+    "event_id": {
+      "type": "string",
+      "description": "ID \u00fanico do evento (ex: trail_t1, yoga_y2)"
+    },
+    "event_name": {
+      "type": "string",
+      "description": "Nome do evento"
+    },
+    "event_type": {
+      "type": "string",
+      "enum": [
+        "trilha",
+        "yoga"
+      ],
+      "description": "Tipo do evento"
+    },
+    "participant_name": {
+      "type": "string",
+      "description": "Nome do participante"
+    },
+    "participant_emoji": {
+      "type": "string",
+      "description": "Emoji escolhido pelo participante"
+    },
+    "message": {
+      "type": "string",
+      "description": "Mensagem opcional do participante"
+    }
+  },
+  "required": [
+    "event_id",
+    "event_name",
+    "event_type",
+    "participant_name"
+  ]
+}
