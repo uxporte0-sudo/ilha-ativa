@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { CalendarDays, MapPin, Menu, User, Wrench, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -15,36 +15,44 @@ export default function Header({ open, setOpen }) {
       rounded-b-sm
       shadow-sm
       flex items-center justify-between">
+
       <Button variant="ghost" size="icon" onClick={() => setOpen(!open)}>
         {open ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
       </Button>
 
-      <div className="flex flex-wrap justify-center gap-8">
-        <Button asChild className="bg-[#F97415]">
+      {/* Área central dos botões */}
+
+      <div className="flex flex-row flex-nowrap items-center justify-center gap-2 md:gap-8">
+
+        {/* Botão de agenda */}
+        <Button asChild className="bg-accent rounded-full md:rounded-sm md:bg-[#F97415]">
           <Link to="/agendar">
-            <CalendarDays className="w-4 h-4 mr-2" />
-            Agenda
+            <CalendarDays className="w-4 h-4 md:mr-2 text-primary md:text-white" />
+            <span className='hidden md:inline'>Agenda</span>
           </Link>
         </Button>
 
-        <Button asChild className="bg-[#F97415]">
+        {/* Botão de mapa */}
+        <Button asChild className="bg-accent rounded-full md:rounded-sm md:bg-[#F97415]">
           <Link to="/quadras">
-            <MapPin className="w-4 h-4 mr-2" />
-            Mapa
+            <MapPin className="w-4 h-4 md:mr-2 text-primary md:text-white" />
+            <span className='hidden md:inline'>Mapa</span>
           </Link>
         </Button>
 
-        <Button asChild className="bg-[#F97415]">
+        {/* Botão de reparo */}
+        <Button asChild className="bg-accent rounded-full md:rounded-sm md:bg-[#F97415]">
           <Link to="/reparos/novo">
-            <Wrench className="w-4 h-4 mr-2" />
-            Reparo
+            <Wrench className="w-4 h-4 md:mr-2 text-primary md:text-white" />
+            <span className='hidden md:inline'>Reparo</span>
           </Link>
         </Button>
 
-        <Button asChild className="bg-[#F97415]">
+        {/* Botão de perfil */}
+        <Button asChild className="bg-accent rounded-full md:rounded-sm md:bg-[#F97415]">
           <Link to="/minhas-solicitacoes">
-            <User className="w-4 h-4 mr-2" />
-            Perfil
+            <User className="w-4 h-4 md:mr-2 text-primary md:text-white" />
+            <span className='hidden md:inline'>Perfil</span>
           </Link>
         </Button>
       </div>
@@ -61,11 +69,11 @@ export default function Header({ open, setOpen }) {
           backdrop-blur-sm
         "
       >
-        <div className="flex items-center gap-2">
-          <img src={LOGO_URL} alt="IlhAtiva" className="w-8 h-8 object-contain rounded-full" />
+        <div className="flex items-center md:gap-2">
+          <img src={LOGO_URL} alt="IlhAtiva" className="w-6 h-8 object-contain rounded-full" />
           <span className="font-display font-bold text-lg leading-tight">
-            <span className="text-primary">Ilh</span>
-            <span className="text-accent">Ativa</span>
+            <span className="hidden md:inline text-primary">Ilh</span>
+            <span className="hidden md:inline text-accent">Ativa</span>
           </span>
         </div>
       </Link>
