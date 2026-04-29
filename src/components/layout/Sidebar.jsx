@@ -3,8 +3,9 @@ import { Link, useLocation } from 'react-router-dom';
 import { LayoutDashboard, MapPin, CalendarDays, Wrench, ClipboardList, Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import LOGO_URL from '@/assets/logo.webp';
 
-const LOGO_URL = 'https://media.db.com/images/public/69dec7d9e449de930c53c8e9/ec9c6d370_ChatGPTImage15deabrde202620_37_01.png';
+// const LOGO_URL = 'https://media.db.com/images/public/69dec7d9e449de930c53c8e9/ec9c6d370_ChatGPTImage15deabrde202620_37_01.png';
 
 const navItems = [
   { label: 'Painel', path: '/', icon: LayoutDashboard },
