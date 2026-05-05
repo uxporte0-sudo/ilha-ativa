@@ -19,6 +19,7 @@
 │   │   │   └── 📄 EventLobbyPanel.jsx
 │   │   ├── 📁 layout
 │   │   │   ├── 📄 AppLayout.jsx
+│   │   │   ├── 📄 Header.jsx
 │   │   │   └── 📄 Sidebar.jsx
 │   │   ├── 📁 shared
 │   │   │   ├── 📄 CourtCard.jsx
