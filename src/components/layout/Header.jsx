@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { CalendarDays, MapPin, Menu, User, Wrench, X } from 'lucide-react';
+import { MapPin, Menu, Plus, User, Wrench, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import LOGO_URL from '@/assets/logo.webp';
 import useScrollDirections from '@/hooks/use-scroll-directions';
@@ -102,7 +102,7 @@ export default function Header({ open, setOpen }) {
 
       {/* Navegação principal */}
       <div className="flex flex-row flex-nowrap items-center justify-center gap-2 md:gap-8">
-        <NavButton to="/agendar" icon={CalendarDays} label="Agenda" />
+        <NavButton to="/agendar" icon={Plus} label="Criar" />
         <NavButton to="/quadras" icon={MapPin} label="Mapa" />
         <NavButton to="/reparos/novo" icon={Wrench} label="Reparo" />
         <NavButton to="/Perfil" icon={User} label="Perfil" />

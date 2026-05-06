@@ -1,7 +1,5 @@
 import databaseSeed from '@/data/database.json';
 
-const STORAGE_KEY = 'ilha-ativa:pseudo-db';
-
 const entityCollections = {
   User: 'users',
   Atividade: 'atividades',
@@ -18,37 +16,14 @@ function createInitialDatabase() {
   return clone(databaseSeed);
 }
 
-function canUseStorage() {
-  return typeof window !== 'undefined' && Boolean(window.localStorage);
-}
+let currentDatabase = createInitialDatabase();
 
 function readDatabase() {
-  if (!canUseStorage()) return createInitialDatabase();
-
-  const stored = window.localStorage.getItem(STORAGE_KEY);
-
-  if (!stored) {
-    const initialDatabase = createInitialDatabase();
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(initialDatabase));
-    return initialDatabase;
-  }
-
-  try {
-    return {
-      ...createInitialDatabase(),
-      ...JSON.parse(stored),
-    };
-  } catch {
-    const initialDatabase = createInitialDatabase();
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(initialDatabase));
-    return initialDatabase;
-  }
+  return currentDatabase;
 }
 
 function writeDatabase(database) {
-  if (!canUseStorage()) return;
-
-  window.localStorage.setItem(STORAGE_KEY, JSON.stringify(database));
+  currentDatabase = database;
 }
 
 function sortRecords(records, sortBy) {

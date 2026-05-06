@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { MapPin, CalendarDays, Wrench, X } from 'lucide-react';
+import { MapPin, Plus, Wrench, X } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
@@ -90,9 +90,9 @@ export default function CourtSidePanel({ court, onClose }) {
       {/* Actions */}
       <div className="p-4 border-t space-y-2">
         <Button asChild className="w-full" size="sm" disabled={court.status !== 'disponivel'}>
-          <Link to={`/agendar?court=${court.id}`}>
-            <CalendarDays className="w-3.5 h-3.5 mr-2" />
-            Agendar esta Quadra
+          <Link to="/agendar">
+            <Plus className="w-3.5 h-3.5 mr-2" />
+            Criar ativo
           </Link>
         </Button>
         <Button asChild variant="outline" className="w-full" size="sm">

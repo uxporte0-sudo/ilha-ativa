@@ -1,20 +1,11 @@
 import { useRef, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { Link } from 'react-router-dom';
+import { Plus } from 'lucide-react';
 import { db } from '@/api/Client';
 import obterAtividades from '@/components/ListaAtividades';
-import { ativosTipos } from '@/constants/ativosTipos';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-
-const atividadeInicial = {
-  nome: '',
-  tipo: '',
-  data: '',
-  minParticipantes: '2',
-};
 
 function AtivoCard({
   icone,
@@ -58,7 +49,6 @@ export default function Dashboard() {
   const queryClient = useQueryClient();
   const ativosCarouselRef = useRef(null);
   const [ativoAtual, setAtivoAtual] = useState(0);
-  const [novaAtividade, setNovaAtividade] = useState(atividadeInicial);
 
   const { data: atividadesBase = [] } = useQuery({
     queryKey: ['atividades'],
@@ -73,20 +63,6 @@ export default function Dashboard() {
         confirmados: atividade.confirmados + 1,
       }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['atividades'] }),
-  });
-
-  const criarAtividadeMutation = useMutation({
-    mutationFn: (atividade) =>
-      db.entities.Atividade.create({
-        ...atividade,
-        minParticipantes: Number(atividade.minParticipantes),
-        confirmados: 0,
-      }),
-    onSuccess: () => {
-      setNovaAtividade(atividadeInicial);
-      setAtivoAtual(0);
-      queryClient.invalidateQueries({ queryKey: ['atividades'] });
-    },
   });
 
   function atualizarAtivoAtual() {
@@ -121,24 +97,6 @@ export default function Dashboard() {
     });
     setAtivoAtual(index);
   }
-
-  function atualizarNovaAtividade(campo, valor) {
-    setNovaAtividade((atividade) => ({
-      ...atividade,
-      [campo]: valor,
-    }));
-  }
-
-  function criarAtividade(event) {
-    event.preventDefault();
-    criarAtividadeMutation.mutate(novaAtividade);
-  }
-
-  const formularioInvalido =
-    !novaAtividade.nome ||
-    !novaAtividade.tipo ||
-    !novaAtividade.data ||
-    Number(novaAtividade.minParticipantes) < 1;
 
   return (
     <div className="space-y-6">
@@ -188,76 +146,24 @@ export default function Dashboard() {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Novo Ativo</CardTitle>
-            <CardDescription>Crie uma atividade no pseudo banco</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form className="space-y-4" onSubmit={criarAtividade}>
-              <div className="space-y-2">
-                <Label htmlFor="atividade-nome">Nome</Label>
-                <Input
-                  id="atividade-nome"
-                  value={novaAtividade.nome}
-                  onChange={(event) => atualizarNovaAtividade('nome', event.target.value)}
-                  placeholder="Ex: Volei na praia"
-                />
-              </div>
-
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
-                <div className="space-y-2">
-                  <Label>Tipo</Label>
-                  <Select
-                    value={novaAtividade.tipo}
-                    onValueChange={(valor) => atualizarNovaAtividade('tipo', valor)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecione" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {ativosTipos.map((tipo) => (
-                        <SelectItem key={tipo.id} value={tipo.id}>
-                          {tipo.ico} {tipo.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="atividade-data">Data</Label>
-                  <Input
-                    id="atividade-data"
-                    type="date"
-                    value={novaAtividade.data}
-                    onChange={(event) => atualizarNovaAtividade('data', event.target.value)}
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="atividade-minimo">Participantes mínimos</Label>
-                <Input
-                  id="atividade-minimo"
-                  type="number"
-                  min="1"
-                  value={novaAtividade.minParticipantes}
-                  onChange={(event) => atualizarNovaAtividade('minParticipantes', event.target.value)}
-                />
-              </div>
-
-              <Button
-                type="submit"
-                className="w-full"
-                disabled={formularioInvalido || criarAtividadeMutation.isPending}
-              >
-                {criarAtividadeMutation.isPending ? 'Criando...' : 'Criar ativo'}
-              </Button>
-            </form>
-          </CardContent>
+        <Card className="min-h-[17rem]">
+          <CardContent className="h-full min-h-[17rem]" />
         </Card>
       </section>
+
+      <Button
+        asChild
+        size="icon"
+        className="group fixed bottom-5 right-5 z-50 h-14 w-14 rounded-full bg-primary shadow-xl shadow-primary/25 hover:bg-primary/90 md:bottom-8 md:right-8"
+        aria-label="Criar ativo"
+      >
+        <Link to="/agendar">
+          <Plus className="h-6 w-6" />
+          <span className="pointer-events-none absolute bottom-16 right-0 whitespace-nowrap rounded-md bg-foreground px-2 py-1 text-xs font-medium text-background opacity-0 shadow-md transition-opacity group-hover:opacity-100">
+            criar ativo
+          </span>
+        </Link>
+      </Button>
     </div>
   );
 }

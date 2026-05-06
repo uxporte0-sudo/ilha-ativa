@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/lib/AuthContext';
 
-import { CalendarDays, MapPin, Wrench, AlertTriangle, ArrowRight } from 'lucide-react';
+import { CalendarDays, MapPin, Wrench, AlertTriangle, ArrowRight, Plus } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -154,12 +154,12 @@ export default function Perfil() {
       {/* Quick Actions */}
       <div className="grid md:grid-cols-2 gap-4">
         <Card className="p-6 bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20 hover:shadow-lg transition-shadow">
-          <h3 className="font-semibold text-lg mb-2">Agendar Quadra</h3>
-          <p className="text-sm text-muted-foreground mb-4">Reserve um horário em uma das quadras públicas disponíveis.</p>
+          <h3 className="font-semibold text-lg mb-2">Criar Ativo</h3>
+          <p className="text-sm text-muted-foreground mb-4">Cadastre uma atividade usando as categorias disponíveis.</p>
           <Button asChild>
             <Link to="/agendar">
-              <CalendarDays className="w-4 h-4 mr-2" />
-              Fazer Agendamento
+              <Plus className="w-4 h-4 mr-2" />
+              Criar Ativo
             </Link>
           </Button>
         </Card>

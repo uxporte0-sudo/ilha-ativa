@@ -2,7 +2,7 @@ import React from 'react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { MapPin, CalendarDays, Wrench } from 'lucide-react';
+import { MapPin, Plus, Wrench } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 
@@ -52,9 +52,9 @@ export default function CourtCard({ court }) {
         )}
         <div className="flex gap-2">
           <Button asChild size="sm" className="flex-1" disabled={court.status !== 'disponivel'}>
-            <Link to={`/agendar?court=${court.id}`}>
-              <CalendarDays className="w-3.5 h-3.5 mr-1.5" />
-              Agendar
+            <Link to="/agendar">
+              <Plus className="w-3.5 h-3.5 mr-1.5" />
+              Criar ativo
             </Link>
           </Button>
           <Button asChild size="sm" variant="outline">

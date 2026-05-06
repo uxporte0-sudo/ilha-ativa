@@ -1,13 +1,13 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { CalendarDays, ClipboardList, LayoutDashboard, MapPin, Wrench } from 'lucide-react';
+import { ClipboardList, LayoutDashboard, MapPin, Plus, Wrench } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import LOGO_URL from '@/assets/logo.webp';
 
 const navItems = [
   { label: 'Painel', path: '/', icon: LayoutDashboard },
   { label: 'Quadras', path: '/quadras', icon: MapPin },
-  { label: 'Agendar', path: '/agendar', icon: CalendarDays },
+  { label: 'Criar Ativo', path: '/agendar', icon: Plus },
   { label: 'Solicitar Reparo', path: '/reparos/novo', icon: Wrench },
   { label: 'Minhas Solicitações', path: '/minhas-solicitacoes', icon: ClipboardList },
 ];
