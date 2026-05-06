@@ -29,6 +29,7 @@ export default function NewBooking() {
         ...atividade,
         minParticipantes: Number(atividade.minParticipantes),
         confirmados: 0,
+        confirmadosUsuarios: [],
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['atividades'] });

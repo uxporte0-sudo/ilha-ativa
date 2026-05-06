@@ -1,9 +1,10 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { Plus } from 'lucide-react';
 import { db } from '@/api/Client';
 import obterAtividades from '@/components/ListaAtividades';
+import { useAuth } from '@/lib/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
@@ -17,11 +18,22 @@ function AtivoCard({
   onConfirmar,
   confirmando,
   confirmarDesabilitado,
+  confirmado,
+  tone = 'primary',
 }) {
+  const iconClassName =
+    tone === 'secondary'
+      ? 'bg-secondary text-secondary-foreground'
+      : 'bg-primary/10';
+  const buttonClassName =
+    tone === 'secondary'
+      ? 'border-accent bg-accent text-accent-foreground hover:bg-accent/90'
+      : undefined;
+
   return (
     <article className="flex w-full shrink-0 snap-start snap-always flex-col gap-4 rounded-lg border bg-background p-4 transition-colors hover:bg-muted/50 md:min-h-24 md:w-auto md:flex-row md:items-center md:justify-between">
       <div className="flex min-w-0 items-center gap-3">
-        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-xl">
+        <span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-xl ${iconClassName}`}>
           {icone}
         </span>
 
@@ -37,8 +49,14 @@ function AtivoCard({
           <p className="text-xs text-muted-foreground">{confirmadosTexto}</p>
         </div>
 
-        <Button size="sm" onClick={onConfirmar} disabled={confirmando || confirmarDesabilitado}>
-          {confirmando ? 'Confirmando...' : acaoLabel}
+        <Button
+          size="sm"
+          variant={confirmado ? 'outline' : 'default'}
+          onClick={onConfirmar}
+          disabled={confirmando || confirmarDesabilitado}
+          className={buttonClassName}
+        >
+          {confirmando ? 'Atualizando...' : acaoLabel}
         </Button>
       </div>
     </article>
@@ -47,26 +65,47 @@ function AtivoCard({
 
 export default function Dashboard() {
   const queryClient = useQueryClient();
-  const ativosCarouselRef = useRef(null);
-  const [ativoAtual, setAtivoAtual] = useState(0);
+  const { user } = useAuth();
+  const ativosProximosCarouselRef = useRef(null);
+  const seusAtivosCarouselRef = useRef(null);
+  const [ativoProximoAtual, setAtivoProximoAtual] = useState(0);
+  const [seuAtivoAtual, setSeuAtivoAtual] = useState(0);
 
   const { data: atividadesBase = [] } = useQuery({
     queryKey: ['atividades'],
     queryFn: () => db.entities.Atividade.list('-created_date'),
   });
 
-  const atividades = obterAtividades(atividadesBase);
+  const atividades = obterAtividades(atividadesBase, user?.id);
+  const ativosProximos = atividades.filter((atividade) => !atividade.confirmadoPeloUsuario);
+  const seusAtivos = atividades.filter((atividade) => atividade.confirmadoPeloUsuario);
 
-  const confirmarPresencaMutation = useMutation({
-    mutationFn: (atividade) =>
-      db.entities.Atividade.update(atividade.id, {
-        confirmados: atividade.confirmados + 1,
-      }),
+  const alternarPresencaMutation = useMutation({
+    mutationFn: (atividade) => {
+      const confirmadosUsuarios = atividade.confirmadosUsuarios ?? [];
+      const confirmado = confirmadosUsuarios.includes(user.id);
+      const proximosConfirmadosUsuarios = confirmado
+        ? confirmadosUsuarios.filter((usuarioId) => usuarioId !== user.id)
+        : [...confirmadosUsuarios, user.id];
+
+      return db.entities.Atividade.update(atividade.id, {
+        confirmados: Math.max(0, atividade.confirmados + (confirmado ? -1 : 1)),
+        confirmadosUsuarios: proximosConfirmadosUsuarios,
+      });
+    },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['atividades'] }),
   });
 
-  function atualizarAtivoAtual() {
-    const carousel = ativosCarouselRef.current;
+  useEffect(() => {
+    setAtivoProximoAtual(0);
+  }, [ativosProximos.length]);
+
+  useEffect(() => {
+    setSeuAtivoAtual(0);
+  }, [seusAtivos.length]);
+
+  function atualizarAtivoAtual(carouselRef, setAtivoAtual) {
+    const carousel = carouselRef.current;
 
     if (!carousel) return;
 
@@ -85,8 +124,8 @@ export default function Dashboard() {
     setAtivoAtual(cardMaisProximo.index);
   }
 
-  function rolarParaAtivo(index) {
-    const carousel = ativosCarouselRef.current;
+  function rolarParaAtivo(carouselRef, setAtivoAtual, index) {
+    const carousel = carouselRef.current;
     const card = carousel?.children[index];
 
     if (!carousel || !card) return;
@@ -107,7 +146,7 @@ export default function Dashboard() {
         </p>
       </div>
 
-      <section className="grid gap-5 lg:grid-cols-[minmax(0,1.4fr)_minmax(280px,0.8fr)]">
+      <section className="grid gap-5 lg:grid-cols-2">
         <Card className="overflow-hidden">
           <CardHeader className="pb-3">
             <CardTitle>ATIVOS</CardTitle>
@@ -115,39 +154,90 @@ export default function Dashboard() {
           </CardHeader>
           <CardContent>
             <div
-              ref={ativosCarouselRef}
-              onScroll={atualizarAtivoAtual}
+              ref={ativosProximosCarouselRef}
+              onScroll={() => atualizarAtivoAtual(ativosProximosCarouselRef, setAtivoProximoAtual)}
               className="scrollbar-none-mobile flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-smooth pb-2 md:block md:max-h-[13.5rem] md:space-y-3 md:overflow-x-visible md:overflow-y-auto md:pr-2"
             >
-              {atividades.map((atividade) => (
+              {ativosProximos.map((atividade) => (
                 <AtivoCard
                   key={atividade.id}
                   {...atividade}
-                  onConfirmar={() => confirmarPresencaMutation.mutate(atividade)}
-                  confirmando={confirmarPresencaMutation.variables?.id === atividade.id && confirmarPresencaMutation.isPending}
+                  onConfirmar={() => alternarPresencaMutation.mutate(atividade)}
+                  confirmando={alternarPresencaMutation.variables?.id === atividade.id && alternarPresencaMutation.isPending}
+                  confirmado={atividade.confirmadoPeloUsuario}
                 />
               ))}
+              {ativosProximos.length === 0 && (
+                <div className="rounded-lg border border-dashed p-5 text-sm text-muted-foreground">
+                  Todos os ativos disponíveis já estão confirmados por você.
+                </div>
+              )}
             </div>
 
-            <div className="mt-3 flex justify-center gap-2 md:hidden">
-              {atividades.map((atividade, index) => (
-                <button
-                  key={atividade.id}
-                  type="button"
-                  onClick={() => rolarParaAtivo(index)}
-                  className={`h-2 rounded-full transition-all ${
-                    ativoAtual === index ? 'w-6 bg-primary' : 'w-2 bg-muted-foreground/35'
-                  }`}
-                  aria-label={`Ir para ${atividade.nome}`}
-                  aria-current={ativoAtual === index}
-                />
-              ))}
-            </div>
+            {ativosProximos.length > 0 && (
+              <div className="mt-3 flex justify-center gap-2 md:hidden">
+                {ativosProximos.map((atividade, index) => (
+                  <button
+                    key={atividade.id}
+                    type="button"
+                    onClick={() => rolarParaAtivo(ativosProximosCarouselRef, setAtivoProximoAtual, index)}
+                    className={`h-2 rounded-full transition-all ${
+                      ativoProximoAtual === index ? 'w-6 bg-primary' : 'w-2 bg-muted-foreground/35'
+                    }`}
+                    aria-label={`Ir para ${atividade.nome}`}
+                    aria-current={ativoProximoAtual === index}
+                  />
+                ))}
+              </div>
+            )}
           </CardContent>
         </Card>
 
-        <Card className="min-h-[17rem]">
-          <CardContent className="h-full min-h-[17rem]" />
+        <Card className="overflow-hidden">
+          <CardHeader className="pb-3">
+            <CardTitle>Seus Ativos</CardTitle>
+            <CardDescription>Eventos com presença confirmada</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div
+              ref={seusAtivosCarouselRef}
+              onScroll={() => atualizarAtivoAtual(seusAtivosCarouselRef, setSeuAtivoAtual)}
+              className="scrollbar-none-mobile flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-smooth pb-2 md:block md:max-h-[13.5rem] md:space-y-3 md:overflow-x-visible md:overflow-y-auto md:pr-2"
+            >
+              {seusAtivos.map((atividade) => (
+                <AtivoCard
+                  key={atividade.id}
+                  {...atividade}
+                  onConfirmar={() => alternarPresencaMutation.mutate(atividade)}
+                  confirmando={alternarPresencaMutation.variables?.id === atividade.id && alternarPresencaMutation.isPending}
+                  confirmado={atividade.confirmadoPeloUsuario}
+                  tone="secondary"
+                />
+              ))}
+              {seusAtivos.length === 0 && (
+                <div className="rounded-lg border border-dashed p-5 text-sm text-muted-foreground">
+                  Confirme presença em um ativo para acompanhar ele por aqui.
+                </div>
+              )}
+            </div>
+
+            {seusAtivos.length > 0 && (
+              <div className="mt-3 flex justify-center gap-2 md:hidden">
+                {seusAtivos.map((atividade, index) => (
+                  <button
+                    key={atividade.id}
+                    type="button"
+                    onClick={() => rolarParaAtivo(seusAtivosCarouselRef, setSeuAtivoAtual, index)}
+                    className={`h-2 rounded-full transition-all ${
+                      seuAtivoAtual === index ? 'w-6 bg-secondary' : 'w-2 bg-muted-foreground/35'
+                    }`}
+                    aria-label={`Ir para ${atividade.nome}`}
+                    aria-current={seuAtivoAtual === index}
+                  />
+                ))}
+              </div>
+            )}
+          </CardContent>
         </Card>
       </section>
 

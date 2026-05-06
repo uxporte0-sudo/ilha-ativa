@@ -11,10 +11,12 @@ function formatarData(data) {
   }).format(new Date(`${data}T00:00:00`));
 }
 
-export default function ListaAtividades(atividades = []) {
+export default function ListaAtividades(atividades = [], usuarioId) {
   return atividades.map((atividade) => {
     const tipo = buscarTipoAtivo(atividade.tipo);
     const confirmados = atividade.confirmados ?? 0;
+    const confirmadosUsuarios = atividade.confirmadosUsuarios ?? [];
+    const confirmadoPeloUsuario = confirmadosUsuarios.includes(usuarioId);
 
     return {
       id: atividade.id,
@@ -24,8 +26,10 @@ export default function ListaAtividades(atividades = []) {
       dataFormatada: formatarData(atividade.data),
       confirmadosTexto: `${confirmados}/${atividade.minParticipantes} confirmados`,
       confirmados,
+      confirmadosUsuarios,
+      confirmadoPeloUsuario,
       minParticipantes: atividade.minParticipantes,
-      acaoLabel: "Confirmar presença",
+      acaoLabel: confirmadoPeloUsuario ? "Confirmado" : "Confirmar presença",
     };
   });
 }

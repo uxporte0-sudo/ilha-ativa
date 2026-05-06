@@ -19,6 +19,7 @@
       "data": "2026-05-15",
       "minParticipantes": 10,
       "confirmados": 3,
+      "confirmadosUsuarios": [],
       "created_date": "2026-05-06T00:00:00.000Z"
     },
     {
@@ -28,6 +29,7 @@
       "data": "2026-05-20",
       "minParticipantes": 2,
       "confirmados": 1,
+      "confirmadosUsuarios": [],
       "created_date": "2026-05-06T00:00:00.000Z"
     },
     {
@@ -37,6 +39,7 @@
       "data": "2026-05-20",
       "minParticipantes": 15,
       "confirmados": 10,
+      "confirmadosUsuarios": [],
       "created_date": "2026-05-06T00:00:00.000Z"
     },
     {
@@ -46,6 +49,7 @@
       "data": "2026-05-18",
       "minParticipantes": 5,
       "confirmados": 4,
+      "confirmadosUsuarios": [],
       "created_date": "2026-05-06T00:00:00.000Z"
     },
     {
@@ -55,6 +59,7 @@
       "data": "2026-05-22",
       "minParticipantes": 8,
       "confirmados": 6,
+      "confirmadosUsuarios": [],
       "created_date": "2026-05-06T00:00:00.000Z"
     }
   ],
