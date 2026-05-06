@@ -1,28 +1,26 @@
 import React, { createContext, useContext, useState } from 'react';
+import { db } from '@/api/Client';
+import { getCurrentUser } from '@/lib/pseudoDb';
 
 const AuthContext = createContext();
 
-const localUser = {
-  id: 'local-ui-user',
-  full_name: 'Usuario Local',
-  email: 'local@example.com',
-  role: 'admin',
-};
-
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(localUser);
+  const [user, setUser] = useState(() => getCurrentUser());
 
   const checkUserAuth = async () => {
-    setUser(localUser);
-    return localUser;
+    const currentUser = await db.auth.me();
+    setUser(currentUser);
+    return currentUser;
   };
 
   const checkAppState = async () => {
-    setUser(localUser);
+    const currentUser = await db.auth.me();
+    setUser(currentUser);
     return { id: 'local-ui', public_settings: {} };
   };
 
-  const logout = () => setUser(localUser);
+  const updateUser = (updatedUser) => setUser(updatedUser);
+  const logout = () => checkUserAuth();
   const navigateToLogin = () => {};
 
   return (
@@ -38,6 +36,7 @@ export const AuthProvider = ({ children }) => {
       navigateToLogin,
       checkAppState,
       checkUserAuth,
+      updateUser,
     }}>
       {children}
     </AuthContext.Provider>

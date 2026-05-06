@@ -1,19 +1,31 @@
-import { db } from '@/api/base44Client';
+import { db } from '@/api/Client';
 
-import React from 'react';
-import { useQuery } from '@tanstack/react-query';
+import React, { useState } from 'react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useAuth } from '@/lib/AuthContext';
 
 import { CalendarDays, MapPin, Wrench, AlertTriangle, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import StatCard from '@/components/shared/StatCard';
 import { BookingStatusBadge, RepairStatusBadge, PriorityBadge } from '@/components/shared/StatusBadge';
 import { motion } from 'framer-motion';
 
-export default function Dashboard() {
+export default function Perfil() {
+  const queryClient = useQueryClient();
+  const { user, updateUser } = useAuth();
+  const [profileForm, setProfileForm] = useState({
+    full_name: user?.full_name ?? '',
+    age: user?.age ?? '',
+    address: user?.address ?? '',
+    phone: user?.phone ?? '',
+  });
+
   const { data: courts = [] } = useQuery({
     queryKey: ['courts'],
     queryFn: () => db.entities.Court.list(),
@@ -35,6 +47,26 @@ export default function Dashboard() {
     return b.date === today && b.status !== 'cancelado';
   });
 
+  const updateProfileMutation = useMutation({
+    mutationFn: (data) => db.entities.User.update(user.id, data),
+    onSuccess: (updatedUser) => {
+      updateUser(updatedUser);
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+    },
+  });
+
+  function updateProfileField(field, value) {
+    setProfileForm((profile) => ({
+      ...profile,
+      [field]: value,
+    }));
+  }
+
+  function saveProfile(event) {
+    event.preventDefault();
+    updateProfileMutation.mutate(profileForm);
+  }
+
   return (
     <div className="space-y-8">
       {/* Header */}
@@ -48,6 +80,63 @@ export default function Dashboard() {
         </motion.h1>
         <p className="text-muted-foreground mt-1">Gestão das quadras públicas de Ilhabela</p>
       </div>
+
+      <Card className="p-5">
+        <form onSubmit={saveProfile} className="space-y-5">
+          <div>
+            <h2 className="text-lg font-semibold">Administrador Dev</h2>
+            <p className="text-sm text-muted-foreground">{user?.email}</p>
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-2">
+            <div className="space-y-2">
+              <Label htmlFor="profile-name">Nome</Label>
+              <Input
+                id="profile-name"
+                value={profileForm.full_name}
+                onChange={(event) => updateProfileField('full_name', event.target.value)}
+                placeholder="Nome completo"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="profile-age">Idade</Label>
+              <Input
+                id="profile-age"
+                type="number"
+                min="0"
+                value={profileForm.age}
+                onChange={(event) => updateProfileField('age', event.target.value)}
+                placeholder="Idade"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="profile-address">Endereço</Label>
+              <Input
+                id="profile-address"
+                value={profileForm.address}
+                onChange={(event) => updateProfileField('address', event.target.value)}
+                placeholder="Endereço"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="profile-phone">Telefone</Label>
+              <Input
+                id="profile-phone"
+                value={profileForm.phone}
+                onChange={(event) => updateProfileField('phone', event.target.value)}
+                placeholder="(12) 99999-9999"
+              />
+            </div>
+          </div>
+
+          <Button type="submit" disabled={updateProfileMutation.isPending || !profileForm.full_name}>
+            {updateProfileMutation.isPending ? 'Salvando...' : 'Salvar perfil'}
+          </Button>
+        </form>
+      </Card>
 
       {/* Stats */}
       <motion.div 

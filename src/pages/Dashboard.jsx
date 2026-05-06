@@ -1,154 +1,263 @@
-import { db } from '@/api/base44Client';
-
-import React from 'react';
-import { useQuery } from '@tanstack/react-query';
-
-import { CalendarDays, MapPin, Wrench, AlertTriangle, ArrowRight } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import { Card } from '@/components/ui/card';
+import { useRef, useState } from 'react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { db } from '@/api/Client';
+import obterAtividades from '@/components/ListaAtividades';
+import { ativosTipos } from '@/constants/ativosTipos';
 import { Button } from '@/components/ui/button';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
-import StatCard from '@/components/shared/StatCard';
-import { BookingStatusBadge, RepairStatusBadge, PriorityBadge } from '@/components/shared/StatusBadge';
-import { motion } from 'framer-motion';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+
+const atividadeInicial = {
+  nome: '',
+  tipo: '',
+  data: '',
+  minParticipantes: '2',
+};
+
+function AtivoCard({
+  icone,
+  nome,
+  tipoLabel,
+  dataFormatada,
+  confirmadosTexto,
+  acaoLabel,
+  onConfirmar,
+  confirmando,
+  confirmarDesabilitado,
+}) {
+  return (
+    <article className="flex w-full shrink-0 snap-start snap-always flex-col gap-4 rounded-lg border bg-background p-4 transition-colors hover:bg-muted/50 md:min-h-24 md:w-auto md:flex-row md:items-center md:justify-between">
+      <div className="flex min-w-0 items-center gap-3">
+        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-xl">
+          {icone}
+        </span>
+
+        <div className="min-w-0">
+          <h3 className="truncate text-sm font-semibold">{nome}</h3>
+          <p className="text-sm text-muted-foreground">{tipoLabel}</p>
+        </div>
+      </div>
+
+      <div className="flex shrink-0 items-center justify-between gap-4 sm:justify-end">
+        <div className="text-left sm:text-right">
+          <p className="text-sm font-medium">{dataFormatada}</p>
+          <p className="text-xs text-muted-foreground">{confirmadosTexto}</p>
+        </div>
+
+        <Button size="sm" onClick={onConfirmar} disabled={confirmando || confirmarDesabilitado}>
+          {confirmando ? 'Confirmando...' : acaoLabel}
+        </Button>
+      </div>
+    </article>
+  );
+}
 
 export default function Dashboard() {
-  const { data: courts = [] } = useQuery({
-    queryKey: ['courts'],
-    queryFn: () => db.entities.Court.list(),
+  const queryClient = useQueryClient();
+  const ativosCarouselRef = useRef(null);
+  const [ativoAtual, setAtivoAtual] = useState(0);
+  const [novaAtividade, setNovaAtividade] = useState(atividadeInicial);
+
+  const { data: atividadesBase = [] } = useQuery({
+    queryKey: ['atividades'],
+    queryFn: () => db.entities.Atividade.list('-created_date'),
   });
 
-  const { data: bookings = [] } = useQuery({
-    queryKey: ['bookings'],
-    queryFn: () => db.entities.Booking.list('-created_date', 50),
+  const atividades = obterAtividades(atividadesBase);
+
+  const confirmarPresencaMutation = useMutation({
+    mutationFn: (atividade) =>
+      db.entities.Atividade.update(atividade.id, {
+        confirmados: atividade.confirmados + 1,
+      }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['atividades'] }),
   });
 
-  const { data: repairs = [] } = useQuery({
-    queryKey: ['repairs'],
-    queryFn: () => db.entities.RepairRequest.list('-created_date', 50),
+  const criarAtividadeMutation = useMutation({
+    mutationFn: (atividade) =>
+      db.entities.Atividade.create({
+        ...atividade,
+        minParticipantes: Number(atividade.minParticipantes),
+        confirmados: 0,
+      }),
+    onSuccess: () => {
+      setNovaAtividade(atividadeInicial);
+      setAtivoAtual(0);
+      queryClient.invalidateQueries({ queryKey: ['atividades'] });
+    },
   });
 
-  const openRepairs = repairs.filter(r => r.status !== 'concluido');
-  const todayBookings = bookings.filter(b => {
-    const today = format(new Date(), 'yyyy-MM-dd');
-    return b.date === today && b.status !== 'cancelado';
-  });
+  function atualizarAtivoAtual() {
+    const carousel = ativosCarouselRef.current;
+
+    if (!carousel) return;
+
+    const cards = Array.from(carousel.children);
+    const cardMaisProximo = cards.reduce(
+      (maisProximo, card, index) => {
+        const distancia = Math.abs(card.offsetLeft - carousel.scrollLeft);
+
+        return distancia < maisProximo.distancia
+          ? { index, distancia }
+          : maisProximo;
+      },
+      { index: 0, distancia: Infinity }
+    );
+
+    setAtivoAtual(cardMaisProximo.index);
+  }
+
+  function rolarParaAtivo(index) {
+    const carousel = ativosCarouselRef.current;
+    const card = carousel?.children[index];
+
+    if (!carousel || !card) return;
+
+    carousel.scrollTo({
+      left: card.offsetLeft,
+      behavior: 'smooth',
+    });
+    setAtivoAtual(index);
+  }
+
+  function atualizarNovaAtividade(campo, valor) {
+    setNovaAtividade((atividade) => ({
+      ...atividade,
+      [campo]: valor,
+    }));
+  }
+
+  function criarAtividade(event) {
+    event.preventDefault();
+    criarAtividadeMutation.mutate(novaAtividade);
+  }
+
+  const formularioInvalido =
+    !novaAtividade.nome ||
+    !novaAtividade.tipo ||
+    !novaAtividade.data ||
+    Number(novaAtividade.minParticipantes) < 1;
 
   return (
-    <div className="space-y-8">
-      {/* Header */}
+    <div className="space-y-6">
       <div>
-        <motion.h1 
-          initial={{ opacity: 0, y: -10 }} 
-          animate={{ opacity: 1, y: 0 }}
-          className="text-2xl md:text-3xl font-display font-bold"
-        >
-          Painel de Controle
-        </motion.h1>
-        <p className="text-muted-foreground mt-1">Gestão das quadras públicas de Ilhabela</p>
+        <h1 className="text-2xl md:text-3xl font-display font-bold">Seu Painel</h1>
+        <p className="text-muted-foreground mt-1">
+          Acompanhe os ATIVOS e informações principais da Ilha Ativa.
+        </p>
       </div>
 
-      {/* Stats */}
-      <motion.div 
-        initial={{ opacity: 0, y: 10 }} 
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
-        className="grid grid-cols-2 lg:grid-cols-4 gap-4"
-      >
-        <StatCard title="Quadras" value={courts.length} icon={MapPin} color="primary" />
-        <StatCard title="Agendamentos Hoje" value={todayBookings.length} icon={CalendarDays} color="accent" />
-        <StatCard title="Reparos Abertos" value={openRepairs.length} icon={Wrench} color="warning" />
-        <StatCard title="Urgentes" value={repairs.filter(r => r.priority === 'urgente' && r.status !== 'concluido').length} icon={AlertTriangle} color="destructive" />
-      </motion.div>
-
-      {/* Quick Actions */}
-      <div className="grid md:grid-cols-2 gap-4">
-        <Card className="p-6 bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20 hover:shadow-lg transition-shadow">
-          <h3 className="font-semibold text-lg mb-2">Agendar Quadra</h3>
-          <p className="text-sm text-muted-foreground mb-4">Reserve um horário em uma das quadras públicas disponíveis.</p>
-          <Button asChild>
-            <Link to="/agendar">
-              <CalendarDays className="w-4 h-4 mr-2" />
-              Fazer Agendamento
-            </Link>
-          </Button>
-        </Card>
-        <Card className="p-6 bg-gradient-to-br from-accent/5 to-accent/10 border-accent/20 hover:shadow-lg transition-shadow">
-          <h3 className="font-semibold text-lg mb-2">Solicitar Reparo</h3>
-          <p className="text-sm text-muted-foreground mb-4">Reporte um problema em uma quadra para manutenção.</p>
-          <Button asChild variant="outline">
-            <Link to="/reparos/novo">
-              <Wrench className="w-4 h-4 mr-2" />
-              Solicitar Reparo
-            </Link>
-          </Button>
-        </Card>
-      </div>
-
-      {/* Recent Activity */}
-      <div className="grid lg:grid-cols-2 gap-6">
-        {/* Recent Bookings */}
+      <section className="grid gap-5 lg:grid-cols-[minmax(0,1.4fr)_minmax(280px,0.8fr)]">
         <Card className="overflow-hidden">
-          <div className="p-5 border-b flex items-center justify-between">
-            <h3 className="font-semibold">Agendamentos Recentes</h3>
-            <Button asChild variant="ghost" size="sm">
-              <Link to="/minhas-solicitacoes" className="text-primary">
-                Ver todos <ArrowRight className="w-3.5 h-3.5 ml-1" />
-              </Link>
-            </Button>
-          </div>
-          <div className="divide-y">
-            {bookings.slice(0, 5).map((booking) => (
-              <div key={booking.id} className="p-4 flex items-center justify-between hover:bg-muted/50 transition-colors">
-                <div>
-                  <p className="font-medium text-sm">{booking.court_name}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {booking.date && format(new Date(booking.date + 'T12:00:00'), "dd 'de' MMM", { locale: ptBR })} • {booking.time_slot}
-                  </p>
-                </div>
-                <BookingStatusBadge status={booking.status} />
-              </div>
-            ))}
-            {bookings.length === 0 && (
-              <div className="p-8 text-center text-sm text-muted-foreground">
-                Nenhum agendamento encontrado
-              </div>
-            )}
-          </div>
+          <CardHeader className="pb-3">
+            <CardTitle>ATIVOS</CardTitle>
+            <CardDescription>Ativos próximos de você</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div
+              ref={ativosCarouselRef}
+              onScroll={atualizarAtivoAtual}
+              className="scrollbar-none-mobile flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-smooth pb-2 md:block md:max-h-[13.5rem] md:space-y-3 md:overflow-x-visible md:overflow-y-auto md:pr-2"
+            >
+              {atividades.map((atividade) => (
+                <AtivoCard
+                  key={atividade.id}
+                  {...atividade}
+                  onConfirmar={() => confirmarPresencaMutation.mutate(atividade)}
+                  confirmando={confirmarPresencaMutation.variables?.id === atividade.id && confirmarPresencaMutation.isPending}
+                />
+              ))}
+            </div>
+
+            <div className="mt-3 flex justify-center gap-2 md:hidden">
+              {atividades.map((atividade, index) => (
+                <button
+                  key={atividade.id}
+                  type="button"
+                  onClick={() => rolarParaAtivo(index)}
+                  className={`h-2 rounded-full transition-all ${
+                    ativoAtual === index ? 'w-6 bg-primary' : 'w-2 bg-muted-foreground/35'
+                  }`}
+                  aria-label={`Ir para ${atividade.nome}`}
+                  aria-current={ativoAtual === index}
+                />
+              ))}
+            </div>
+          </CardContent>
         </Card>
 
-        {/* Recent Repairs */}
-        <Card className="overflow-hidden">
-          <div className="p-5 border-b flex items-center justify-between">
-            <h3 className="font-semibold">Solicitações de Reparo</h3>
-            <Button asChild variant="ghost" size="sm">
-              <Link to="/minhas-solicitacoes" className="text-primary">
-                Ver todos <ArrowRight className="w-3.5 h-3.5 ml-1" />
-              </Link>
-            </Button>
-          </div>
-          <div className="divide-y">
-            {repairs.slice(0, 5).map((repair) => (
-              <div key={repair.id} className="p-4 flex items-center justify-between hover:bg-muted/50 transition-colors">
-                <div>
-                  <p className="font-medium text-sm">{repair.title}</p>
-                  <p className="text-xs text-muted-foreground">{repair.court_name}</p>
+        <Card>
+          <CardHeader>
+            <CardTitle>Novo Ativo</CardTitle>
+            <CardDescription>Crie uma atividade no pseudo banco</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form className="space-y-4" onSubmit={criarAtividade}>
+              <div className="space-y-2">
+                <Label htmlFor="atividade-nome">Nome</Label>
+                <Input
+                  id="atividade-nome"
+                  value={novaAtividade.nome}
+                  onChange={(event) => atualizarNovaAtividade('nome', event.target.value)}
+                  placeholder="Ex: Volei na praia"
+                />
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
+                <div className="space-y-2">
+                  <Label>Tipo</Label>
+                  <Select
+                    value={novaAtividade.tipo}
+                    onValueChange={(valor) => atualizarNovaAtividade('tipo', valor)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {ativosTipos.map((tipo) => (
+                        <SelectItem key={tipo.id} value={tipo.id}>
+                          {tipo.ico} {tipo.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
-                <div className="flex gap-2">
-                  <PriorityBadge priority={repair.priority} />
-                  <RepairStatusBadge status={repair.status} />
+
+                <div className="space-y-2">
+                  <Label htmlFor="atividade-data">Data</Label>
+                  <Input
+                    id="atividade-data"
+                    type="date"
+                    value={novaAtividade.data}
+                    onChange={(event) => atualizarNovaAtividade('data', event.target.value)}
+                  />
                 </div>
               </div>
-            ))}
-            {repairs.length === 0 && (
-              <div className="p-8 text-center text-sm text-muted-foreground">
-                Nenhuma solicitação de reparo
+
+              <div className="space-y-2">
+                <Label htmlFor="atividade-minimo">Participantes mínimos</Label>
+                <Input
+                  id="atividade-minimo"
+                  type="number"
+                  min="1"
+                  value={novaAtividade.minParticipantes}
+                  onChange={(event) => atualizarNovaAtividade('minParticipantes', event.target.value)}
+                />
               </div>
-            )}
-          </div>
+
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={formularioInvalido || criarAtividadeMutation.isPending}
+              >
+                {criarAtividadeMutation.isPending ? 'Criando...' : 'Criar ativo'}
+              </Button>
+            </form>
+          </CardContent>
         </Card>
-      </div>
+      </section>
     </div>
   );
 }

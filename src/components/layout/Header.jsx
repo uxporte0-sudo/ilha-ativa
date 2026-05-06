@@ -105,7 +105,7 @@ export default function Header({ open, setOpen }) {
         <NavButton to="/agendar" icon={CalendarDays} label="Agenda" />
         <NavButton to="/quadras" icon={MapPin} label="Mapa" />
         <NavButton to="/reparos/novo" icon={Wrench} label="Reparo" />
-        <NavButton to="/minhas-solicitacoes" icon={User} label="Perfil" />
+        <NavButton to="/Perfil" icon={User} label="Perfil" />
       </div>
 
       {/* Logo / Home */}

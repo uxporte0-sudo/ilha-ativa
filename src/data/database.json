@@ -1,0 +1,81 @@
+{
+  "users": [
+    {
+      "id": "admin-dev",
+      "full_name": "Administrador Dev",
+      "email": "admin@ilhaativa.dev",
+      "role": "admin",
+      "age": "32",
+      "address": "Ilhabela, SP",
+      "phone": "(12) 99999-0000",
+      "created_date": "2026-05-06T00:00:00.000Z"
+    }
+  ],
+  "atividades": [
+    {
+      "id": "atividade-1",
+      "nome": "Racha de Baska",
+      "tipo": "basquete",
+      "data": "2026-05-15",
+      "minParticipantes": 10,
+      "confirmados": 3,
+      "created_date": "2026-05-06T00:00:00.000Z"
+    },
+    {
+      "id": "atividade-2",
+      "nome": "Trilha ecologica",
+      "tipo": "trilha",
+      "data": "2026-05-20",
+      "minParticipantes": 2,
+      "confirmados": 1,
+      "created_date": "2026-05-06T00:00:00.000Z"
+    },
+    {
+      "id": "atividade-3",
+      "nome": "Fut valendo coca",
+      "tipo": "futebol",
+      "data": "2026-05-20",
+      "minParticipantes": 15,
+      "confirmados": 10,
+      "created_date": "2026-05-06T00:00:00.000Z"
+    },
+    {
+      "id": "atividade-4",
+      "nome": "Corrida do Por do Sol",
+      "tipo": "corrida",
+      "data": "2026-05-18",
+      "minParticipantes": 5,
+      "confirmados": 4,
+      "created_date": "2026-05-06T00:00:00.000Z"
+    },
+    {
+      "id": "atividade-5",
+      "nome": "Yoga na Praia",
+      "tipo": "yoga",
+      "data": "2026-05-22",
+      "minParticipantes": 8,
+      "confirmados": 6,
+      "created_date": "2026-05-06T00:00:00.000Z"
+    }
+  ],
+  "courts": [
+    {
+      "id": "court-1",
+      "name": "Quadra Pereque",
+      "location": "Pereque",
+      "type": "futebol",
+      "status": "disponivel",
+      "created_date": "2026-05-06T00:00:00.000Z"
+    },
+    {
+      "id": "court-2",
+      "name": "Ginásio Municipal",
+      "location": "Centro",
+      "type": "basquete",
+      "status": "disponivel",
+      "created_date": "2026-05-06T00:00:00.000Z"
+    }
+  ],
+  "bookings": [],
+  "repairRequests": []
+}

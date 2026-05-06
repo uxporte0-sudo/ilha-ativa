@@ -89,3 +89,15 @@
     @apply bg-background text-foreground font-sans;
   }
 }
+
+@layer utilities {
+  @media (max-width: 767px) {
+    .scrollbar-none-mobile {
+      scrollbar-width: none;
+    }
+
+    .scrollbar-none-mobile::-webkit-scrollbar {
+      display: none;
+    }
+  }
+}

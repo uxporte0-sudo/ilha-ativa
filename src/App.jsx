@@ -11,11 +11,23 @@ import Courts from '@/pages/Courts';
 import NewBooking from '@/pages/NewBooking';
 import NewRepairRequest from '@/pages/NewRepairRequest';
 import MyRequests from '@/pages/MyRequests';
+import Perfil from '@/pages/Perfil';
 
+/**
+ * AuthenticatedApp
+ *
+ * Componente responsável por decidir o que a aplicação deve exibir depois que
+ * o contexto de autenticação estiver disponível.
+ *
+ * Fluxo:
+ * - enquanto carrega configurações públicas/autenticação, mostra um loading;
+ * - se houver erro de autenticação, mostra a tela adequada ou redireciona;
+ * - se estiver tudo certo, renderiza as rotas principais da aplicação.
+ */
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
 
-  // Show loading spinner while checking app public settings or auth
+  // Loading inicial enquanto o app confere configurações públicas e autenticação.
   if (isLoadingPublicSettings || isLoadingAuth) {
     return (
       <div className="fixed inset-0 flex items-center justify-center">
@@ -24,32 +36,51 @@ const AuthenticatedApp = () => {
     );
   }
 
-  // Handle authentication errors
+  // Tratamento centralizado dos estados de erro de autenticação.
   if (authError) {
     if (authError.type === 'user_not_registered') {
       return <UserNotRegisteredError />;
     } else if (authError.type === 'auth_required') {
-      // Redirect to login automatically
+      // Quando o login é obrigatório, delega o redirecionamento ao AuthContext.
       navigateToLogin();
       return null;
     }
   }
 
-  // Render the main app
+  // Rotas internas da aplicação.
+  // Para criar uma nova página:
+  // 1. crie o componente em src/pages;
+  // 2. importe o componente neste arquivo;
+  // 3. adicione um novo <Route /> dentro do AppLayout se ela usar Header/Sidebar.
   return (
     <Routes>
+      {/* Rotas com layout padrão: Header, Sidebar e área principal via <Outlet />. */}
       <Route element={<AppLayout />}>
         <Route path="/" element={<Dashboard />} />
         <Route path="/quadras" element={<Courts />} />
         <Route path="/agendar" element={<NewBooking />} />
         <Route path="/reparos/novo" element={<NewRepairRequest />} />
         <Route path="/minhas-solicitacoes" element={<MyRequests />} />
+        <Route path="/perfil" element={<Perfil />} />
       </Route>
+
+      {/* Fallback para qualquer rota não cadastrada. */}
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
 };
 
+/**
+ * App
+ *
+ * Raiz da aplicação.
+ *
+ * Providers usados aqui:
+ * - AuthProvider: disponibiliza autenticação e configurações do app;
+ * - QueryClientProvider: habilita cache e requisições via React Query;
+ * - Router: ativa o roteamento do react-router-dom;
+ * - Toaster: renderiza notificações globais.
+ */
 function App() {
 
   return (
