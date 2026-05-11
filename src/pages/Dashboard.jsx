@@ -27,8 +27,8 @@ function AtivoCard({
       : 'bg-primary/10';
   const buttonClassName =
     tone === 'secondary'
-      ? 'border-accent bg-accent text-accent-foreground hover:bg-accent/90'
-      : undefined;
+      ? 'border-transparent bg-gradient-accent text-accent-foreground hover:brightness-110'
+      : 'bg-gradient-primary text-primary-foreground hover:brightness-110';
 
   return (
     <article className="flex w-full shrink-0 snap-start snap-always flex-col gap-4 rounded-lg border bg-background p-4 transition-colors hover:bg-muted/50 md:min-h-24 md:w-auto md:flex-row md:items-center md:justify-between">
@@ -244,7 +244,7 @@ export default function Dashboard() {
       <Button
         asChild
         size="icon"
-        className="group fixed bottom-5 right-5 z-50 h-14 w-14 rounded-full bg-primary shadow-xl shadow-primary/25 hover:bg-primary/90 md:bottom-8 md:right-8"
+        className="group fixed bottom-5 right-5 z-50 h-14 w-14 rounded-full bg-gradient-primary shadow-xl shadow-primary/25 hover:brightness-110 md:bottom-8 md:right-8"
         aria-label="Criar ativo"
       >
         <Link to="/agendar">

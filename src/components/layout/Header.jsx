@@ -21,9 +21,12 @@ import useScrollDirections from '@/hooks/use-scroll-directions';
  */
 function NavButton({ to, icon: Icon, label }) {
   return (
-    <Button asChild className="bg-accent rounded-full md:rounded-sm md:bg-accent">
+    <Button
+      asChild
+      className="bg-gradient-accent rounded-full md:rounded-sm hover:brightness-110 hover:shadow-lg active:scale-[0.98] transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/60"
+    >
       <Link to={to}>
-        <Icon className="w-4 h-4 md:mr-2 text-primary md:text-white" />
+        <Icon className="w-4 h-4 md:mr-2 text-white" />
         <span className="hidden md:inline">{label}</span>
       </Link>
     </Button>
@@ -68,7 +71,7 @@ export default function Header({ open, setOpen }) {
         px-4 py-3
 
         /* Visual */
-        bg-[#1BA77F]/70
+        bg-primary/85
         backdrop-blur-xl
         border-b border-white/30
         rounded-b-sm

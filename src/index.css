@@ -91,6 +91,14 @@
 }
 
 @layer utilities {
+  .bg-gradient-primary {
+    background-image: linear-gradient(135deg, #04B393 50%, #008878 100%);
+  }
+
+  .bg-gradient-accent {
+    background-image: linear-gradient(135deg, #feb707 0%, #f84505 100%);
+  }
+
   @media (max-width: 767px) {
     .scrollbar-none-mobile {
       scrollbar-width: none;
