@@ -29,7 +29,7 @@ export default function ListaAtividades(atividades = [], usuarioId) {
       confirmadosUsuarios,
       confirmadoPeloUsuario,
       minParticipantes: atividade.minParticipantes,
-      acaoLabel: confirmadoPeloUsuario ? "Cancelar" : "Confirmar presença",
+      acaoLabel: confirmadoPeloUsuario ? "Confirmado" : "Confirmar presença",
     };
   });
 }
