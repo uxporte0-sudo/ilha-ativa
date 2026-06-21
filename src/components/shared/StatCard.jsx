@@ -1,3 +1,5 @@
+// LEGACY - DO NOT USE in official MVP flows.
+// Dashboard/Perfil legacy metrics should not be reused by MVP screens.
 import React from 'react';
 import { Card } from '@/components/ui/card';
 import { cn } from '@/lib/utils';

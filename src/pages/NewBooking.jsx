@@ -1,3 +1,5 @@
+// LEGACY - DO NOT USE in official MVP flows.
+// Replaced by CreateAtivoScreen and the Ativo official domain.
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';

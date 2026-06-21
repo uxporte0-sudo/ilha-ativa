@@ -1,3 +1,5 @@
+// LEGACY - DO NOT USE in official MVP flows.
+// Replaced by MapScreen and official Local/Ativo map projection.
 import React, { useState } from 'react';
 import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet';
 import L from 'leaflet';

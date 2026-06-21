@@ -1,3 +1,5 @@
+// LEGACY - DO NOT USE in official MVP flows.
+// Official routing is currently handled by AppShell/AuthContext in App.jsx.
 import { useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 import { useAuth } from '@/lib/AuthContext';

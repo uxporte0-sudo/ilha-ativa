@@ -1,3 +1,5 @@
+// LEGACY - DO NOT USE in official MVP flows.
+// Replaced by official Domain services and Official Data Layer.
 import { getCurrentUser, pseudoDb } from '@/lib/pseudoDb';
 
 export const db = {

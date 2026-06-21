@@ -1,3 +1,5 @@
+// LEGACY - DO NOT USE in official MVP flows.
+// Replaced by LocalScreen, CreateAtivoScreen, and future Zeladoria flow.
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';

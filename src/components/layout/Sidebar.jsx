@@ -1,3 +1,5 @@
+// LEGACY - DO NOT USE in official MVP flows.
+// Replaced by MainMenu inside AppShell.
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { ClipboardList, LayoutDashboard, MapPin, Plus, Wrench } from 'lucide-react';

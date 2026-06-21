@@ -1,3 +1,5 @@
+// LEGACY - DO NOT USE in official MVP flows.
+// Booking/Repair statuses are replaced by Participacao/Zeladoria vocabulary.
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';

@@ -1,3 +1,5 @@
+// LEGACY - DO NOT USE in official MVP flows.
+// Replaced by src/data/officialDataSource.js and official repositories/services.
 import databaseSeed from '@/data/database.json';
 
 const entityCollections = {

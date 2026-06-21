@@ -1,37 +1,58 @@
-import React, { createContext, useContext, useState } from 'react';
-import { db } from '@/api/Client';
-import { getCurrentUser } from '@/lib/pseudoDb';
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { SessionService } from '@/domain/user/sessionService';
+import { UserRepository } from '@/domain/user/repository';
 
 const AuthContext = createContext();
+const PUBLIC_SETTINGS = { id: 'official-mvp', public_settings: {} };
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(() => getCurrentUser());
+  const [user, setUser] = useState(null);
+  const [isLoadingAuth, setIsLoadingAuth] = useState(true);
+  const [authError, setAuthError] = useState(null);
 
   const checkUserAuth = async () => {
-    const currentUser = await db.auth.me();
-    setUser(currentUser);
-    return currentUser;
+    try {
+      setIsLoadingAuth(true);
+      const session = await SessionService.getSession();
+      setUser(session.user);
+      setAuthError(session.error);
+      return session.user;
+    } catch (error) {
+      setAuthError({ type: 'auth_error', error });
+      return null;
+    } finally {
+      setIsLoadingAuth(false);
+    }
   };
 
   const checkAppState = async () => {
-    const currentUser = await db.auth.me();
-    setUser(currentUser);
-    return { id: 'local-ui', public_settings: {} };
+    await checkUserAuth();
+    return PUBLIC_SETTINGS;
   };
 
-  const updateUser = (updatedUser) => setUser(updatedUser);
+  const updateUser = async (updatedUser) => {
+    const officialUser = updatedUser?.id
+      ? await UserRepository.update(updatedUser.id, updatedUser)
+      : updatedUser;
+    setUser(officialUser);
+    return officialUser;
+  };
   const logout = () => checkUserAuth();
   const navigateToLogin = () => {};
+
+  useEffect(() => {
+    checkUserAuth();
+  }, []);
 
   return (
     <AuthContext.Provider value={{ 
       user, 
-      isAuthenticated: true,
-      authChecked: true,
-      isLoadingAuth: false,
+      isAuthenticated: Boolean(user?.id),
+      authChecked: !isLoadingAuth,
+      isLoadingAuth,
       isLoadingPublicSettings: false,
-      authError: null,
-      appPublicSettings: { id: 'local-ui', public_settings: {} },
+      authError,
+      appPublicSettings: PUBLIC_SETTINGS,
       logout,
       navigateToLogin,
       checkAppState,

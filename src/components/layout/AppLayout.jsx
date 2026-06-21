@@ -1,3 +1,5 @@
+// LEGACY - DO NOT USE in official MVP flows.
+// Replaced by AppShell as the official Foundation layout.
 import React, { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import Header from './Header';

@@ -15,6 +15,10 @@ node_modules
 dist
 dist-ssr
 *.local
+.scripts/
+.context/
+tools/
+generated/
 
 # Editor directories and files
 .vscode/*
@@ -31,3 +35,9 @@ dist-ssr
 .vite
 .tmp.driveupload/
 .tmp.drivedownload/
+
+.gitignore
+docs/
+scripts/
+recss.py
+REFACTOR_PLAN.md

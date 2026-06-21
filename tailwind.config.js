@@ -1,4 +1,4 @@
-/** @type {import('tailwindcss').Config} */
+﻿/** @type {import('tailwindcss').Config} */
 module.exports = {
     darkMode: ["class"],
     content: ["./index.html", "./src/**/*.{ts,tsx,js,jsx}"],
@@ -44,7 +44,59 @@ module.exports = {
   				DEFAULT: 'hsl(var(--destructive))',
   				foreground: 'hsl(var(--destructive-foreground))'
   			},
+  			brand: {
+  				primary: 'hsl(var(--brand-primary))',
+  				'primary-strong': 'hsl(var(--brand-primary-strong))',
+  				'primary-subtle': 'hsl(var(--brand-primary-subtle))',
+  				secondary: 'hsl(var(--brand-secondary))',
+  				accent: 'hsl(var(--brand-accent))'
+  			},
+  			surface: {
+  				base: 'hsl(var(--surface-base))',
+  				base2: 'hsl(var(--surface-base2))',
+				menu: 'hsl(var(--surface-menu))',
+  				subtle: 'hsl(var(--surface-subtle))',
+  				card: 'hsl(var(--surface-card))',
+  				elevated: 'hsl(var(--surface-elevated))',
+  				inverse: 'hsl(var(--surface-inverse))'
+  			},
+  			container: {
+  				primary: 'hsl(var(--container-primary))',
+  				'primary-strong': 'hsl(var(--container-primary-strong))',
+  				secondary: 'hsl(var(--container-secondary))',
+  				'secondary-strong': 'hsl(var(--container-secondary-strong))',
+  				accent: 'hsl(var(--container-accent))',
+  				'accent-strong': 'hsl(var(--container-accent-strong))'
+  			},
+  			text: {
+  				primary: 'hsl(var(--text-primary))',
+  				secondary: 'hsl(var(--text-secondary))',
+  				tertiary: 'hsl(var(--text-tertiary))',
+  				disabled: 'hsl(var(--text-disabled))',
+  				inverse: 'hsl(var(--text-inverse))'
+  			},
+  			interaction: {
+  				default: 'hsl(var(--interaction-default))',
+  				hover: 'hsl(var(--interaction-hover))',
+  				pressed: 'hsl(var(--interaction-pressed))',
+  				focus: 'hsl(var(--interaction-focus))',
+  				disabled: 'hsl(var(--interaction-disabled))'
+  			},
+  			success: {
+  				DEFAULT: 'hsl(var(--success))',
+  				foreground: 'hsl(var(--success-foreground))'
+  			},
+  			error: {
+  				DEFAULT: 'hsl(var(--error))',
+  				foreground: 'hsl(var(--error-foreground))'
+  			},
   			border: 'hsl(var(--border))',
+  			borderSemantic: {
+  				subtle: 'hsl(var(--border-subtle))',
+  				DEFAULT: 'hsl(var(--border-default))',
+  				strong: 'hsl(var(--border-strong))',
+  				focus: 'hsl(var(--border-focus))'
+  			},
   			input: 'hsl(var(--input))',
   			ring: 'hsl(var(--ring))',
   			chart: {
@@ -91,3 +143,5 @@ module.exports = {
   },
   plugins: [require("tailwindcss-animate")],
 }
+
+

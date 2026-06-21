@@ -1,3 +1,5 @@
+// LEGACY - DO NOT USE in official MVP flows.
+// Replaced by Ativo/Participacao official domain services.
 import { ativosTipos } from "../constants/ativosTipos";
 
 function buscarTipoAtivo(tipoId) {

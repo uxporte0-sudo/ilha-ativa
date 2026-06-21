@@ -1,3 +1,5 @@
+// LEGACY - DO NOT USE in official MVP flows.
+// Replaced by MapScreen and the Local/Ativo official domain.
 import { db } from '@/api/Client';
 
 import React, { useState } from 'react';

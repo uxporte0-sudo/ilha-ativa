@@ -1,3 +1,5 @@
+// LEGACY - DO NOT USE in official MVP flows.
+// Replaced by Agenda and future Zeladoria official flows.
 import { db } from '@/api/Client';
 
 import React from 'react';

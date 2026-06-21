@@ -1,3 +1,5 @@
+// LEGACY - DO NOT USE in official MVP flows.
+// EventLobby is outside the MVP official domain.
 import { db } from '@/api/Client';
 
 import React, { useState } from 'react';
