@@ -14,6 +14,9 @@ import LocalScreen from '@/pages/LocalScreen';
 import MapScreen from '@/pages/MapScreen';
 import RetrospectiveScreen from '@/pages/RetrospectiveScreen';
 import SpecPlaceholder from '@/pages/SpecPlaceholder';
+import ZeladoriaScreen from '@/pages/ZeladoriaScreen';
+import ZeladoriaCreateScreen from '@/pages/ZeladoriaCreateScreen';
+import ZeladoriaDetailsScreen from '@/pages/ZeladoriaDetailsScreen';
 import { legacyRedirects } from '@/routes/legacyRedirects';
 
 const appRoutes = [
@@ -90,6 +93,15 @@ function AuthenticatedApp() {
                 <LocalScreen />
               ) : route.path === '/retrospectiva' ? (
                 <RetrospectiveScreen />
+              ) : route.path === 
+              '/zeladoria' ? (
+                <ZeladoriaScreen />
+              ) : route.path === 
+              '/zeladoria/nova' ? (
+                <ZeladoriaCreateScreen />
+              ) : route.path === 
+              '/zeladoria/:zeladoriaId' ? (
+                <ZeladoriaDetailsScreen />
               ) : (
                 <SpecPlaceholder {...route} />
               )
@@ -108,7 +120,7 @@ function AuthenticatedApp() {
 
       <Route
         path="*"
-        element={<SpecPlaceholder title="Rota não encontrada" spec="notFound" route="*" variant="warm" showBack />}
+        element={<SpecPlaceholder title="Rota nÃ£o encontrada" spec="notFound" route="*" variant="warm" showBack />}
       />
     </Routes>
   );

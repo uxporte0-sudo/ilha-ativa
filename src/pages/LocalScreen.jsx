@@ -196,6 +196,19 @@ export default function LocalScreen() {
         </Button>
       </section>
 
+      <section className="rounded-[var(--radius-card)] bg-surface-inverse p-5 text-text-inverse shadow-card">
+        <h2 className="text-lg font-bold">Abrir Zeladoria</h2>
+        <p className="mt-1 text-sm leading-5 text-text-inverse/80">
+          Abrir formulário de Zeladoria para este Local.
+        </p>
+        <Button asChild className="mt-4 w-full" variant="secondary">
+          <Link to={`/zeladoria/nova?localId=${local.id}`}>
+            <Plus className="h-4 w-4" />
+            Abrir Zeladoria
+          </Link>
+        </Button>
+      </section>
+
       <LocalAtivosSection local={local} ativos={ativos} />
     </AppScreen>
   );
