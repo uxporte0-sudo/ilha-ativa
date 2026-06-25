@@ -39,6 +39,16 @@ function matchesAtivoTerm(ativo, local, termoBusca) {
 }
 
 function buildLocalBounds(locais) {
+  if (locais.length === 0) {
+    // Default bounds for Ilhabela
+    return {
+      minLat: -23.85,
+      maxLat: -23.78,
+      minLng: -45.40,
+      maxLng: -45.34,
+    };
+  }
+
   const latitudes = locais.map((local) => local.latitude);
   const longitudes = locais.map((local) => local.longitude);
 

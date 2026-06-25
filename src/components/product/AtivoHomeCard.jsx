@@ -1,4 +1,4 @@
-import { UsersRound, Signal } from 'lucide-react';
+import { UsersRound, Signal, MapPin } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 import QuadraPlaceholder from '@/components/assets/Quadra_placeholder.jpg';

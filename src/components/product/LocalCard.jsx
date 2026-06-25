@@ -30,10 +30,7 @@ export default function LocalCard({ local, className }) {
         </h3>
 
         <p className="mt-1 truncate text-[11px] leading-4 text-text-secondary">
-          {local.logradouro ??
-            local.endereco ??
-            'Logradouro'}
-          {local.numero && ` | Nº ${local.numero}`}
+          {local.endereco ?? 'Endereço'}
         </p>
 
         <p className="truncate text-[11px] leading-4 text-text-tertiary">

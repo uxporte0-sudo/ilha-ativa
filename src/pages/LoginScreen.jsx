@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import AppScreen from '@/components/layout/AppScreen';
 import { Button } from '@/components/ui/button';
 import { TextField } from '@/components/ui/input';
-import LOGO_URL from '@/components/assets/logo.webp';
+import LOGO_URL from '@/components/assets/Logo.webp';
 
 const LoginScreen = () => {
   const { login } = useAuth();
