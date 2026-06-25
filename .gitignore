@@ -41,5 +41,7 @@ docs/
 scripts/
 recss.py
 REFACTOR_PLAN.md
+DESIGN_REFACTOR_PLAN.md
+src/index.css.bak
 
 .clinerules

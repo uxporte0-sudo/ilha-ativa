@@ -11,6 +11,7 @@ import AtivoDetailsScreen from '@/pages/AtivoDetailsScreen';
 import CreateAtivoScreen from '@/pages/CreateAtivoScreen';
 import HomeScreen from '@/pages/HomeScreen';
 import LocalScreen from '@/pages/LocalScreen';
+import LoginScreen from '@/pages/LoginScreen';
 import MapScreen from '@/pages/MapScreen';
 import RetrospectiveScreen from '@/pages/RetrospectiveScreen';
 import SpecPlaceholder from '@/pages/SpecPlaceholder';
@@ -19,24 +20,114 @@ import ZeladoriaCreateScreen from '@/pages/ZeladoriaCreateScreen';
 import ZeladoriaDetailsScreen from '@/pages/ZeladoriaDetailsScreen';
 import { legacyRedirects } from '@/routes/legacyRedirects';
 
-const appRoutes = [
-  { path: '/', title: 'Home', spec: 'home', route: '/' },
-  { path: '/mapa', title: 'Mapa', spec: 'mapa', route: '/mapa' },
-  { path: '/agenda', title: 'Agenda', spec: 'agenda', route: '/agenda' },
-  { path: '/ativos/novo', title: 'Criar Ativo', spec: 'criarAtivo', route: '/ativos/novo' },
-  { path: '/ativos/:ativoId', title: 'Detalhes do Ativo', spec: 'ativoDetalhes', route: '/ativos/:ativoId', showBack: true },
-  { path: '/locais/:localId', title: 'Local', spec: 'local', route: '/locais/:localId', showBack: true },
-  { path: '/zeladoria', title: 'Zeladoria', spec: 'zeladoria', route: '/zeladoria' },
-  { path: '/zeladoria/nova', title: 'Nova Zeladoria', spec: 'zeladoria', route: '/zeladoria/nova', showBack: true },
-  { path: '/zeladoria/:zeladoriaId', title: 'Detalhes da Zeladoria', spec: 'zeladoria', route: '/zeladoria/:zeladoriaId', showBack: true },
-  { path: '/retrospectiva', title: 'Retrospectiva', spec: 'retrospectiva', route: '/retrospectiva', showBack: true },
-  { path: '/conta', title: 'Conta', spec: 'conta', route: '/conta' },
+const publicRoutes = [
+  {
+    path: '/login',
+    title: 'Login',
+    spec: 'login',
+    route: '/login',
+    element: <LoginScreen />
+  },
+  {
+    path: '/cadastro',
+    title: 'Cadastro',
+    spec: 'cadastro',
+    route: '/cadastro',
+    showBack: true,
+    element: <SpecPlaceholder variant="warm" />
+  },
+  {
+    path: '/onboarding',
+    title: 'Onboarding',
+    spec: 'onboarding',
+    route: '/onboarding',
+    element: <SpecPlaceholder variant="warm" />
+  },
 ];
 
-const publicRoutes = [
-  { path: '/login', title: 'Login', spec: 'login', route: '/login' },
-  { path: '/cadastro', title: 'Cadastro', spec: 'cadastro', route: '/cadastro', showBack: true },
-  { path: '/onboarding', title: 'Onboarding', spec: 'onboarding', route: '/onboarding' },
+const protectedRoutes = [
+  {
+    path: '/',
+    title: 'Home',
+    spec: 'home',
+    route: '/',
+    element: <HomeScreen />
+  },
+  {
+    path: '/mapa',
+    title: 'Mapa',
+    spec: 'mapa',
+    route: '/mapa',
+    element: <MapScreen />
+  },
+  {
+    path: '/agenda',
+    title: 'Agenda',
+    spec: 'agenda',
+    route: '/agenda',
+    element: <AgendaScreen />
+  },
+  {
+    path: '/conta',
+    title: 'Conta',
+    spec: 'conta',
+    route: '/conta',
+    element: <AccountScreen />
+  },
+  {
+    path: '/ativos/novo',
+    title: 'Criar Ativo',
+    spec: 'criarAtivo',
+    route: '/ativos/novo',
+    element: <CreateAtivoScreen />
+  },
+  {
+    path: '/ativos/:ativoId',
+    title: 'Detalhes do Ativo',
+    spec: 'ativoDetalhes',
+    route: '/ativos/:ativoId',
+    showBack: true,
+    element: <AtivoDetailsScreen />
+  },
+  {
+    path: '/locais/:localId',
+    title: 'Local',
+    spec: 'local',
+    route: '/locais/:localId',
+    showBack: true,
+    element: <LocalScreen />
+  },
+  {
+    path: '/retrospectiva',
+    title: 'Retrospectiva',
+    spec: 'retrospectiva',
+    route: '/retrospectiva',
+    showBack: true,
+    element: <RetrospectiveScreen />
+  },
+  {
+    path: '/zeladoria',
+    title: 'Zeladoria',
+    spec: 'zeladoria',
+    route: '/zeladoria',
+    element: <ZeladoriaScreen />
+  },
+  {
+    path: '/zeladoria/nova',
+    title: 'Nova Zeladoria',
+    spec: 'zeladoria',
+    route: '/zeladoria/nova',
+    showBack: true,
+    element: <ZeladoriaCreateScreen />
+  },
+  {
+    path: '/zeladoria/:zeladoriaId',
+    title: 'Detalhes da Zeladoria',
+    spec: 'zeladoria',
+    route: '/zeladoria/:zeladoriaId',
+    showBack: true,
+    element: <ZeladoriaDetailsScreen />
+  },
 ];
 
 function AuthenticatedApp() {
@@ -44,7 +135,7 @@ function AuthenticatedApp() {
 
   if (isLoadingPublicSettings || isLoadingAuth) {
     return (
-      <div className="fixed inset-0 flex items-center justify-center bg-surface-base2">
+      <div className="fixed inset-0 flex items-center justify-center bg-surface-base">
         <div className="h-10 w-10 animate-spin rounded-full border-4 border-container-primary-strong border-t-brand-primary" />
       </div>
     );
@@ -67,45 +158,16 @@ function AuthenticatedApp() {
         <Route
           key={route.path}
           path={route.path}
-          element={<SpecPlaceholder {...route} variant="warm" />}
+          element={route.element}
         />
       ))}
 
       <Route element={<AppShell />}>
-        {appRoutes.map((route) => (
+        {protectedRoutes.map((route) => (
           <Route
             key={route.path}
             path={route.path}
-            element={
-              route.path === '/' ? (
-                <HomeScreen />
-              ) : route.path === '/mapa' ? (
-                <MapScreen />
-              ) : route.path === '/agenda' ? (
-                <AgendaScreen />
-              ) : route.path === '/conta' ? (
-                <AccountScreen />
-              ) : route.path === '/ativos/novo' ? (
-                <CreateAtivoScreen />
-              ) : route.path === '/ativos/:ativoId' ? (
-                <AtivoDetailsScreen />
-              ) : route.path === '/locais/:localId' ? (
-                <LocalScreen />
-              ) : route.path === '/retrospectiva' ? (
-                <RetrospectiveScreen />
-              ) : route.path === 
-              '/zeladoria' ? (
-                <ZeladoriaScreen />
-              ) : route.path === 
-              '/zeladoria/nova' ? (
-                <ZeladoriaCreateScreen />
-              ) : route.path === 
-              '/zeladoria/:zeladoriaId' ? (
-                <ZeladoriaDetailsScreen />
-              ) : (
-                <SpecPlaceholder {...route} />
-              )
-            }
+            element={route.element}
           />
         ))}
       </Route>
@@ -140,5 +202,3 @@ function App() {
 }
 
 export default App;
-
-

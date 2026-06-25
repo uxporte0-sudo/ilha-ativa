@@ -4,10 +4,10 @@ import AppScreen from '@/components/layout/AppScreen';
 import PageTitle from '@/components/layout/PageTitle';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { ZeladoriaRulesService } from '@/domain/zeladoria/rulesService';
+import { ZeladoriaService } from '@/domain/zeladoria';
 import { LocalService } from '@/domain/local/service';
 import { queryKeys } from '@/domain/shared/queryKeys';
-import { useQuery, useMutation } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 
 const ZeladoriaCreateScreen = () => {
   const { localId: paramLocalId } = useParams();
@@ -22,6 +22,7 @@ const ZeladoriaCreateScreen = () => {
   });
   const [formErrors, setFormErrors] = useState({});
   const [local, setLocal] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const {
     data: fetchedLocal,
@@ -48,7 +49,7 @@ const ZeladoriaCreateScreen = () => {
 
   const handleNextStep = () => {
     if (step === 1) {
-      const validationResult = ZeladoriaRulesService.validateForCreate({
+      const validationResult = ZeladoriaService.validateForCreate({
         ...formData,
         criadorId: 'mock-user-id', // TODO: Replace with actual user ID
         titulo: formData.categoria, // Using categoria as titulo for now
@@ -72,27 +73,23 @@ const ZeladoriaCreateScreen = () => {
     setStep((prev) => prev - 1);
   };
 
-  const createZeladoriaMutation = useMutation({
-    mutationFn: async (newZeladoria) => {
-      // TODO: Integrate with actual Zeladoria creation service
-      return new Promise((resolve) => setTimeout(() => resolve(newZeladoria), 1500));
-    },
-    onSuccess: () => {
+  const handleSubmit = async () => {
+    setIsSubmitting(true);
+    setFormErrors({});
+    try {
+      await ZeladoriaService.create({
+        ...formData,
+        criadorId: 'mock-user-id', // TODO: Replace with actual user ID
+        titulo: formData.categoria, // Using categoria as titulo for now
+        status: ZeladoriaService.getInitialStatus(),
+      });
       setStep(3); // Move to confirmation step
-    },
-    onError: (error) => {
+    } catch (error) {
       console.error('Erro ao criar zeladoria:', error);
-      setFormErrors({ general: 'Erro ao criar zeladoria. Tente novamente.' });
-    },
-  });
-
-  const handleSubmit = () => {
-    createZeladoriaMutation.mutate({
-      ...formData,
-      criadorId: 'mock-user-id', // TODO: Replace with actual user ID
-      titulo: formData.categoria, // Using categoria as titulo for now
-      status: ZeladoriaRulesService.getInitialStatus(),
-    });
+      setFormErrors({ general: error.message || 'Erro ao criar zeladoria. Tente novamente.' });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const renderStepContent = () => {
@@ -178,8 +175,8 @@ const ZeladoriaCreateScreen = () => {
               <Button onClick={handlePreviousStep} variant="secondary">
                 Voltar
               </Button>
-              <Button onClick={handleSubmit} disabled={createZeladoriaMutation.isLoading}>
-                {createZeladoriaMutation.isLoading ? 'Enviando...' : 'Confirmar e Enviar'}
+              <Button onClick={handleSubmit} disabled={isSubmitting}>
+                {isSubmitting ? 'Enviando...' : 'Confirmar e Enviar'}
               </Button>
             </div>
           </>

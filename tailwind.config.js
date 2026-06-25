@@ -13,110 +13,110 @@ module.exports = {
   			md: 'calc(var(--radius) - 2px)',
   			sm: 'calc(var(--radius) - 4px)'
   		},
-  		colors: {
-  			background: 'hsl(var(--background))',
-  			foreground: 'hsl(var(--foreground))',
-  			card: {
-  				DEFAULT: 'hsl(var(--card))',
-  				foreground: 'hsl(var(--card-foreground))'
-  			},
-  			popover: {
-  				DEFAULT: 'hsl(var(--popover))',
-  				foreground: 'hsl(var(--popover-foreground))'
-  			},
-  			primary: {
-  				DEFAULT: 'hsl(var(--primary))',
-  				foreground: 'hsl(var(--primary-foreground))'
-  			},
-  			secondary: {
-  				DEFAULT: 'hsl(var(--secondary))',
-  				foreground: 'hsl(var(--secondary-foreground))'
-  			},
-  			muted: {
-  				DEFAULT: 'hsl(var(--muted))',
-  				foreground: 'hsl(var(--muted-foreground))'
-  			},
-  			accent: {
-  				DEFAULT: 'hsl(var(--accent))',
-  				foreground: 'hsl(var(--accent-foreground))'
-  			},
-  			destructive: {
-  				DEFAULT: 'hsl(var(--destructive))',
-  				foreground: 'hsl(var(--destructive-foreground))'
-  			},
-  			brand: {
-  				primary: 'hsl(var(--brand-primary))',
-  				'primary-strong': 'hsl(var(--brand-primary-strong))',
-  				'primary-subtle': 'hsl(var(--brand-primary-subtle))',
-  				secondary: 'hsl(var(--brand-secondary))',
-  				accent: 'hsl(var(--brand-accent))'
-  			},
-  			surface: {
-  				base: 'hsl(var(--surface-base))',
-  				base2: 'hsl(var(--surface-base2))',
-				menu: 'hsl(var(--surface-menu))',
-  				subtle: 'hsl(var(--surface-subtle))',
-  				card: 'hsl(var(--surface-card))',
-  				elevated: 'hsl(var(--surface-elevated))',
-  				inverse: 'hsl(var(--surface-inverse))'
-  			},
-  			container: {
-  				primary: 'hsl(var(--container-primary))',
-  				'primary-strong': 'hsl(var(--container-primary-strong))',
-  				secondary: 'hsl(var(--container-secondary))',
-  				'secondary-strong': 'hsl(var(--container-secondary-strong))',
-  				accent: 'hsl(var(--container-accent))',
-  				'accent-strong': 'hsl(var(--container-accent-strong))'
-  			},
-  			text: {
-  				primary: 'hsl(var(--text-primary))',
-  				secondary: 'hsl(var(--text-secondary))',
-  				tertiary: 'hsl(var(--text-tertiary))',
-  				disabled: 'hsl(var(--text-disabled))',
-  				inverse: 'hsl(var(--text-inverse))'
-  			},
-  			interaction: {
-  				default: 'hsl(var(--interaction-default))',
-  				hover: 'hsl(var(--interaction-hover))',
-  				pressed: 'hsl(var(--interaction-pressed))',
-  				focus: 'hsl(var(--interaction-focus))',
-  				disabled: 'hsl(var(--interaction-disabled))'
-  			},
-  			success: {
-  				DEFAULT: 'hsl(var(--success))',
-  				foreground: 'hsl(var(--success-foreground))'
-  			},
-  			error: {
-  				DEFAULT: 'hsl(var(--error))',
-  				foreground: 'hsl(var(--error-foreground))'
-  			},
-  			border: 'hsl(var(--border))',
-  			borderSemantic: {
-  				subtle: 'hsl(var(--border-subtle))',
-  				DEFAULT: 'hsl(var(--border-default))',
-  				strong: 'hsl(var(--border-strong))',
-  				focus: 'hsl(var(--border-focus))'
-  			},
-  			input: 'hsl(var(--input))',
-  			ring: 'hsl(var(--ring))',
-  			chart: {
-  				'1': 'hsl(var(--chart-1))',
-  				'2': 'hsl(var(--chart-2))',
-  				'3': 'hsl(var(--chart-3))',
-  				'4': 'hsl(var(--chart-4))',
-  				'5': 'hsl(var(--chart-5))'
-  			},
-  			sidebar: {
-  				DEFAULT: 'hsl(var(--sidebar-background))',
-  				foreground: 'hsl(var(--sidebar-foreground))',
-  				primary: 'hsl(var(--sidebar-primary))',
-  				'primary-foreground': 'hsl(var(--sidebar-primary-foreground))',
-  				accent: 'hsl(var(--sidebar-accent))',
-  				'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
-  				border: 'hsl(var(--sidebar-border))',
-  				ring: 'hsl(var(--sidebar-ring))'
-  			}
-  		},
+		colors: {
+			background: 'var(--background)',
+			foreground: 'var(--foreground)',
+			card: {
+				DEFAULT: 'var(--card)',
+				foreground: 'var(--card-foreground)'
+			},
+			popover: {
+				DEFAULT: 'var(--popover)',
+				foreground: 'var(--popover-foreground)'
+			},
+			primary: {
+				DEFAULT: 'var(--primary)',
+				foreground: 'var(--primary-foreground)'
+			},
+			secondary: {
+				DEFAULT: 'var(--secondary)',
+				foreground: 'var(--secondary-foreground)'
+			},
+			muted: {
+				DEFAULT: 'var(--muted)',
+				foreground: 'var(--muted-foreground)'
+			},
+			accent: {
+				DEFAULT: 'var(--accent)',
+				foreground: 'var(--accent-foreground)'
+			},
+			destructive: {
+				DEFAULT: 'var(--destructive)',
+				foreground: 'var(--destructive-foreground)'
+			},
+			brand: {
+				primary: 'var(--brand-primary)',
+				'primary-strong': 'var(--brand-primary-strong)',
+				'primary-subtle': 'var(--brand-primary-subtle)',
+				secondary: 'var(--brand-secondary)',
+				accent: 'var(--brand-accent)'
+			},
+			surface: {
+				base: 'var(--surface-base)',
+				base2: 'var(--surface-base2)',
+				menu: 'var(--surface-menu)',
+				subtle: 'var(--surface-subtle)',
+				card: 'var(--surface-card)',
+				elevated: 'var(--surface-elevated)',
+				inverse: 'var(--surface-inverse)'
+			},
+			container: {
+				primary: 'var(--container-primary)',
+				'primary-strong': 'var(--container-primary-strong)',
+				secondary: 'var(--container-secondary)',
+				'secondary-strong': 'var(--container-secondary-strong)',
+				accent: 'var(--container-accent)',
+				'accent-strong': 'var(--container-accent-strong)'
+			},
+			text: {
+				primary: 'var(--text-primary)',
+				secondary: 'var(--text-secondary)',
+				tertiary: 'var(--text-tertiary)',
+				disabled: 'var(--text-disabled)',
+				inverse: 'var(--text-inverse)'
+			},
+			interaction: {
+				default: 'var(--interaction-default)',
+				hover: 'var(--interaction-hover)',
+				pressed: 'var(--interaction-pressed)',
+				focus: 'var(--interaction-focus)',
+				disabled: 'var(--interaction-disabled)'
+			},
+			success: {
+				DEFAULT: 'var(--success)',
+				foreground: 'var(--success-foreground)'
+			},
+			error: {
+				DEFAULT: 'var(--error)',
+				foreground: 'var(--error-foreground)'
+			},
+			border: 'var(--border)',
+			borderSemantic: {
+				subtle: 'var(--border-subtle)',
+				DEFAULT: 'var(--border-default)',
+				strong: 'var(--border-strong)',
+				focus: 'var(--border-focus)'
+			},
+			input: 'var(--input)',
+			ring: 'var(--ring)',
+			chart: {
+				'1': 'var(--chart-1)',
+				'2': 'var(--chart-2)',
+				'3': 'var(--chart-3)',
+				'4': 'var(--chart-4)',
+				'5': 'var(--chart-5)'
+			},
+			sidebar: {
+				DEFAULT: 'var(--sidebar-background)',
+				foreground: 'var(--sidebar-foreground)',
+				primary: 'var(--sidebar-primary)',
+				'primary-foreground': 'var(--sidebar-primary-foreground)',
+				accent: 'var(--sidebar-accent)',
+				'accent-foreground': 'var(--sidebar-accent-foreground)',
+				border: 'var(--sidebar-border)',
+				ring: 'var(--sidebar-ring)'
+			}
+		},
   		keyframes: {
   			'accordion-down': {
   				from: {

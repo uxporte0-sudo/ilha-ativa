@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { AlertCircle, Layers3, List, LocateFixed, Map, MapPin, Plus, SlidersHorizontal } from 'lucide-react';
+import { AlertCircle, Layers3, List, LocateFixed, Map as MapIcon, MapPin, Plus, SlidersHorizontal } from 'lucide-react';
 import AppScreen from '@/components/layout/AppScreen';
 import AtivoHomeCard from '@/components/product/AtivoHomeCard';
 import LocalCard from '@/components/product/LocalCard';
@@ -13,6 +13,8 @@ import { AtivoService } from '@/domain/ativo/service';
 import { LocalService } from '@/domain/local/service';
 import { assertOfficialQueryKey, queryKeys } from '@/domain/shared/queryKeys';
 import { cn } from '@/lib/utils';
+
+console.log("MapScreen renderizado");
 
 function normalize(value) {
   return String(value ?? '').trim().toLowerCase();
@@ -248,7 +250,7 @@ export default function MapScreen() {
             </p>
           </div>
           <Button type="button" size="icon" variant="outline" onClick={() => setModoLista((value) => !value)} aria-label="Alternar mapa e lista">
-            {modoLista ? <Map className="h-5 w-5" /> : <List className="h-5 w-5" />}
+            {modoLista ? <MapIcon className="h-5 w-5" /> : <List className="h-5 w-5" />}
           </Button>
         </div>
       </header>

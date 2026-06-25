@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { AlertCircle, ArrowRight, Sparkles } from 'lucide-react';
+import { ChevronRight, AlertCircle, ArrowRight, Sparkles } from 'lucide-react';
 import AppScreen from '@/components/layout/AppScreen';
 import CreateAtivoAction from '@/components/navigation/CreateAtivoAction';
 import AtivoHomeCard from '@/components/product/AtivoHomeCard';
@@ -130,23 +130,76 @@ function HomeHeader({ userName }) {
   );
 }
 
-function AtivosSection({ title, ativos, locaisById, participacoesByAtivo }) {
-  if (ativos.length === 0) return null;
+function EmptyAtivosSection() {
+  return (
+    <div className="flex flex-col items-center gap-2 py-6">
+      <p className="text-sm font-medium text-text-secondary">
+        Nenhum Ativo encontrado
+      </p>
 
+      <Button asChild size="sm">
+        <Link to="/ativos/novo">
+          + Criar Ativo
+        </Link>
+      </Button>
+    </div>
+  );
+}
+
+function EmptyRecommendedCard() {
+  return (
+    <Link
+      to="/ativos/novo"
+      className="block transition-transform active:scale-[0.98]"
+    >
+      <div className="flex items-center gap-4 rounded-[var(--radius-card)] bg-container-secondary-strong px-4 py-4 shadow-card">
+        <div className="flex-1">
+          <h3 className="font-semibold text-text-primary">
+            Que tal criar um?
+          </h3>
+
+          <p className="mt-1 text-sm text-text-secondary">
+            Experimente: Futebol, Basquete, Vôlei ou Trilha.
+          </p>
+        </div>
+
+        <ChevronRight className="h-5 w-5 shrink-0 text-brand-primary" />
+      </div>
+    </Link>
+  );
+}
+
+function AtivosSection({
+  title,
+  ativos,
+  locaisById,
+  participacoesByAtivo,
+}) {
   return (
     <section className="space-y-3">
       <SectionHeader title={title} actionTo="/mapa" />
-      <div className="-mx-5 flex gap-3 overflow-x-auto px-5 pb-2">
-        {ativos.map((ativo) => (
-          <AtivoHomeCard
-            key={ativo.id}
-            ativo={ativo}
-            local={locaisById.get(ativo.localId)}
-            participacao={participacoesByAtivo.get(ativo.id)}
-            participantes={participacoesByAtivo.get(ativo.id) ? 1 : 0}
-          />
-        ))}
-      </div>
+
+      {ativos.length === 0 ? (
+        title === 'Baseado nos seus gostos' ? (
+          <EmptyRecommendedCard />
+        ) : (
+          <EmptyAtivosSection />
+        )
+      ) : (
+        <div className="-mx-5 flex gap-3 overflow-x-auto px-5 pb-2">
+          {ativos.map((ativo) => (
+            <AtivoHomeCard
+              key={ativo.id}
+              ativo={ativo}
+              local={locaisById.get(ativo.localId)}
+              participacao={participacoesByAtivo.get(ativo.id)}
+              participantes={
+                participacoesByAtivo.get(ativo.id) ? 1 : 0
+              }
+            />
+          ))}
+        </div>
+      )}
     </section>
   );
 }
@@ -172,13 +225,13 @@ function LocaisSection({ locais, ativos }) {
 
 function CreateAtivoPanel() {
   return (
-    <section className="rounded-[var(--radius-card)] bg-surface-inverse px-5 pb-5 pt-10 text-text-inverse shadow-card">
+    <section className="rounded-[var(--radius-card)] bg-container-secondary-strong px-5 pb-5 pt-10 text-text-inverse shadow-card">
       <div className="mb-2 flex justify-center">
         <CreateAtivoAction className="relative -mt-16" />
       </div>
       <div className="text-center">
-        <h2 className="text-lg font-bold">Crie um Ativo agora</h2>
-        <p className="mt-1 text-sm leading-5 text-text-inverse/80">
+        <h2 className="text-text-primary font-bold">Crie um Ativo agora</h2>
+        <p className="mt-1 text-sm leading-5 text-text-secondary">
           Abra um convite, escolha um Local e chame pessoas para praticar com voce.
         </p>
       </div>

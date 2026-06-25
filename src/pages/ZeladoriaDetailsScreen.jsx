@@ -1,24 +1,31 @@
 import React, { useEffect, useState } from 'react';
-import ZeladoriaService from '../services/ZeladoriaService';
+import { useParams } from 'react-router-dom';
+import { ZeladoriaService } from '@/domain/zeladoria';
 
 const ZeladoriaDetailsScreen = () => {
+  const { zeladoriaId } = useParams();
   const [zeladoria, setZeladoria] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null); // Novo estado de erro
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Chamada mínima ao service para preparar a obtenção dos dados
-    ZeladoriaService.getZeladoriaById('some-id')
+    if (!zeladoriaId) {
+      setError(new Error('ID da zeladoria não fornecido'));
+      setLoading(false);
+      return;
+    }
+
+    ZeladoriaService.getById(zeladoriaId)
       .then(data => {
         setZeladoria(data);
-        console.log('Dados da Zeladoria (apenas para verificação): ', data);
+        console.log('Dados da Zeladoria: ', data);
       })
-      .catch(error => {
-        console.error('Erro ao obter dados da Zeladoria: ', error);
-        setError(error); // Define o estado de erro
+      .catch(err => {
+        console.error('Erro ao obter dados da Zeladoria: ', err);
+        setError(err);
       })
       .finally(() => setLoading(false));
-  }, []);
+  }, [zeladoriaId]);
 
   return (
     <div>
@@ -26,15 +33,16 @@ const ZeladoriaDetailsScreen = () => {
       {loading ? (
         <p>Carregando...</p>
       ) : error ? (
-        <p>Erro: {error.message}</p> // Exibe mensagem de erro
+        <p>Erro: {error.message}</p>
       ) : (
         zeladoria ? (
           <div>
-            <p><strong>Categoria:</strong> {zeladoria.categoria}</p>
+            <p><strong>Título:</strong> {zeladoria.titulo}</p>
             <p><strong>Descrição:</strong> {zeladoria.descricao}</p>
             <p><strong>Status:</strong> {zeladoria.status}</p>
-            <p><strong>Prioridade:</strong> {zeladoria.prioridade}</p>
-            <p><strong>Local:</strong> {zeladoria.local}</p>
+            <p><strong>Tipo:</strong> {zeladoria.tipo}</p>
+            <p><strong>Local ID:</strong> {zeladoria.localId}</p>
+            <p><strong>Data Criação:</strong> {zeladoria.dataCriacao}</p>
           </div>
         ) : (
           <p>Nenhum dado de Zeladoria encontrado.</p>

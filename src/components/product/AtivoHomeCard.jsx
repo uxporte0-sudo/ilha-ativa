@@ -1,55 +1,151 @@
-import { CalendarDays, MapPin, UsersRound } from 'lucide-react';
+import { UsersRound, Signal } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
+import QuadraPlaceholder from '@/components/assets/Quadra_placeholder.jpg';
 
-function formatDateTime(value) {
+function formatHora(value) {
+  if (!value) return '--:--';
+
   return new Intl.DateTimeFormat('pt-BR', {
-    weekday: 'short',
-    day: '2-digit',
-    month: 'short',
     hour: '2-digit',
     minute: '2-digit',
   }).format(new Date(value));
 }
 
-function formatModalidade(value) {
-  if (!value) return 'Ativo';
+function formatNivel(value) {
+  if (!value) return 'Livre';
+
   return value.charAt(0).toUpperCase() + value.slice(1);
 }
 
-export default function AtivoHomeCard({ ativo, local, participacao, participantes = 0 }) {
-  const quorumLabel = `${participantes}/${ativo.minimoParticipantes}+`;
+function getEmoji(modalidade) {
+  const emojis = {
+    futebol: '⚽',
+    volei: '🏐',
+    vôlei: '🏐',
+    basquete: '🏀',
+    tenis: '🎾',
+    tênis: '🎾',
+    corrida: '🏃',
+    caminhada: '🚶',
+    trilha: '🥾',
+    ciclismo: '🚴',
+    pedal: '🚴',
+    surf: '🏄',
+    yoga: '🧘',
+    natacao: '🏊',
+    natação: '🏊',
+  };
+
+  return emojis[modalidade?.toLowerCase()] ?? '🏅';
+}
+
+export default function AtivoHomeCard({
+  ativo,
+  local,
+  participantes = 0,
+}) {
+    const imagem =
+    ativo.imagem ||
+    local?.foto ||
+    local?.imagem ||
+    QuadraPlaceholder;
+
+  const distancia = local?.distancia ?? '—';
 
   return (
     <Link
       to={`/ativos/${ativo.id}`}
-      className="flex h-full min-h-[178px] w-[310px] shrink-0 flex-col justify-between rounded-[var(--radius-card)] border border-borderSemantic-subtle bg-container-secondary p-4 shadow-card outline-none transition-transform hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-interaction-focus"
+      className="
+        w-[132px]
+        shrink-0
+        overflow-hidden
+        rounded-xl
+        border
+        border-borderSemantic-subtle
+        bg-surface-base
+        shadow-card
+        transition-all
+        hover:-translate-y-1
+      "
     >
-      <div className="flex items-start justify-between gap-3">
-        <Badge variant="secondary">{formatModalidade(ativo.modalidade)}</Badge>
-        {participacao ? <Badge variant="accent">{participacao.status}</Badge> : null}
-      </div>
+      {/* Imagem da quadra */}
+<div className="relative aspect-square overflow-hidden rounded-t-xl">
 
-      <div className="mt-4 space-y-2">
-        <h3 className="line-clamp-2 text-lg font-bold leading-6 text-text-primary">{ativo.titulo}</h3>
-        {ativo.descricao ? (
-          <p className="line-clamp-2 text-sm leading-5 text-text-secondary">{ativo.descricao}</p>
-        ) : null}
-      </div>
+  <img
+    src={imagem}
+    alt={local?.nome ?? ativo.titulo}
+    className="h-full w-full object-cover"
+  />
 
-      <div className="mt-4 grid gap-2 text-xs font-medium text-text-secondary">
-        <span className="flex items-center gap-2">
-          <CalendarDays className="h-4 w-4 text-text-tertiary" />
-          {formatDateTime(ativo.dataHoraInicio)}
-        </span>
-        <span className="flex items-center gap-2">
-          <MapPin className="h-4 w-4 text-text-tertiary" />
-          <span className="truncate">{local?.nome ?? 'Local a confirmar'}</span>
-        </span>
-        <span className="flex items-center gap-2">
-          <UsersRound className="h-4 w-4 text-text-tertiary" />
-          {quorumLabel} participantes
-        </span>
+      {/* Hora */}
+      <Badge
+        variant="secondary"
+        className="
+          absolute
+          left-2
+          top-2
+          rounded-md
+          bg-container-primary/95
+          px-2
+          py-0
+          text-[10px]
+          font-bold
+          uppercase
+          shadow-sm
+        "
+      >
+        {formatHora(ativo.dataHoraInicio)}
+      </Badge>
+
+      {/* Distância */}
+      <Badge
+        variant="secondary"
+        className="
+          absolute
+          bottom-2
+          right-2
+          rounded-md
+          bg-container-primary/95
+          px-2
+          py-0
+          text-[9px]
+          shadow-sm
+        "
+      >
+        <MapPin className="mr-1 h-3 w-3" />
+        {distancia}
+      </Badge>
+
+    </div>
+
+      {/* Conteúdo */}
+      <div className="space-y-1 px-2 pb-2">
+
+        <div className="text-base leading-none">
+          {getEmoji(ativo.modalidade)}
+        </div>
+
+        <h3 className="line-clamp-2 text-sm font-bold text-text-primary">
+          {ativo.titulo}
+        </h3>
+
+        <p className="truncate text-[11px] text-text-secondary">
+          {local?.nome ?? 'Local'}
+        </p>
+
+        <div className="flex items-center gap-1 text-[10px] text-text-secondary">
+          <UsersRound className="h-3 w-3" />
+          <span>
+            {participantes}/{ativo.minimoParticipantes}
+          </span>
+        </div>
+
+        <div className="flex items-center gap-1 text-[10px] text-text-secondary">
+          <Signal className="h-3 w-3" />
+          <span>{formatNivel(ativo.nivelDificuldade)}</span>
+        </div>
+
       </div>
     </Link>
   );
