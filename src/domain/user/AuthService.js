@@ -12,7 +12,7 @@ export class AuthService {
    */
   static async login(credentials) {
     // Official login logic: validate credentials against official data source
-    const officialUser = await UserRepository.getById(credentials.id);
+    const officialUser = await UserRepository.getByEmail(credentials.email);
     if (!officialUser) {
       throw new Error('Credenciais inválidas');
     }

@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { SessionService } from '@/domain/user/sessionService';
 import { UserRepository } from '@/domain/user/repository';
+import { AuthService } from '@/domain/user/AuthService';
 
 const AuthContext = createContext();
 const PUBLIC_SETTINGS = { id: 'official-mvp', public_settings: {} };
@@ -37,7 +38,34 @@ export const AuthProvider = ({ children }) => {
     setUser(officialUser);
     return officialUser;
   };
-  const logout = () => checkUserAuth();
+
+  const login = async (credentials) => {
+    try {
+      setIsLoadingAuth(true);
+      setAuthError(null);
+      const session = await AuthService.login(credentials);
+      setUser(session.user);
+      return session;
+    } catch (error) {
+      setAuthError({ type: 'auth_error', error });
+      throw error;
+    } finally {
+      setIsLoadingAuth(false);
+    }
+  };
+
+  const logout = async () => {
+    try {
+      setIsLoadingAuth(true);
+      await AuthService.logout();
+      setUser(null);
+    } catch (error) {
+      setAuthError({ type: 'auth_error', error });
+    } finally {
+      setIsLoadingAuth(false);
+    }
+  };
+
   const navigateToLogin = () => {};
 
   useEffect(() => {
@@ -58,6 +86,7 @@ export const AuthProvider = ({ children }) => {
       checkAppState,
       checkUserAuth,
       updateUser,
+      login,
     }}>
       {children}
     </AuthContext.Provider>

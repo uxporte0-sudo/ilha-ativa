@@ -16,6 +16,11 @@ export const UserRepository = {
     return user ? createUser(user) : null;
   },
 
+  async getByEmail(email) {
+    const users = await officialDataSource.users.filter({ email });
+    return users.length > 0 ? createUser(users[0]) : null;
+  },
+
   async update(userId, data) {
     const updatedUser = await officialDataSource.users.update(userId, data);
     return updatedUser ? createUser(updatedUser) : null;
