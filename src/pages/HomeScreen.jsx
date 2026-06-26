@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { ChevronRight, AlertCircle, ArrowRight } from 'lucide-react';
@@ -6,9 +6,7 @@ import AppScreen from '@/components/layout/AppScreen';
 import CreateAtivoAction from '@/components/navigation/CreateAtivoAction';
 import AtivoHomeCard from '@/components/product/AtivoHomeCard';
 import LocalCard from '@/components/product/LocalCard';
-import SearchField from '@/components/product/SearchField';
 import PromoCarousel from '@/components/product/PromoCarousel';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AtivoService } from '@/domain/ativo/service';
@@ -220,7 +218,6 @@ function CreateAtivoPanel() {
 }
 
 export default function HomeScreen() {
-  const [termoBusca, setTermoBusca] = useState('');
 
   const sessionQuery = useQuery({
     queryKey: assertOfficialQueryKey(queryKeys.user.current()),
@@ -230,6 +227,20 @@ export default function HomeScreen() {
     queryKey: assertOfficialQueryKey(queryKeys.ativos.all()),
     queryFn: () => AtivoService.list(),
   });
+
+  // INVESTIGAÇÃO: Log dos ativos recebidos
+  useEffect(() => {
+    if (ativosQuery.data) {
+      console.log('[INVESTIGAÇÃO] HomeScreen - ativosQuery.data:', ativosQuery.data.map(a => ({
+        id: a.id,
+        titulo: a.titulo,
+        status: a.status,
+        dataHoraInicio: a.dataHoraInicio,
+        localId: a.localId,
+        modalidade: a.modalidade
+      })));
+    }
+  }, [ativosQuery.data]);
   const locaisQuery = useQuery({
     queryKey: assertOfficialQueryKey(queryKeys.locais.trending()),
     queryFn: () => LocalService.listTrending(6),
@@ -260,20 +271,28 @@ export default function HomeScreen() {
     const participacoesByAtivo = new Map(
       participacoesUsuario.map((participacao) => [participacao.ativoId, participacao])
     );
-    const proximosAtivos = ativos
-      .filter((ativo) => isUpcomingAtivo(ativo))
-      .filter((ativo) => matchesTerm(ativo, locaisById.get(ativo.localId), termoBusca))
+
+    // INVESTIGAÇÃO: Pipeline de filtros
+    console.log('[INVESTIGAÇÃO] Pipeline - Todos os ativos:', ativos.length, ativos.map(a => ({ id: a.id, status: a.status, dataHoraInicio: a.dataHoraInicio })));
+
+    const afterStatus = ativos.filter((ativo) => isDiscoverableAtivo(ativo));
+    console.log('[INVESTIGAÇÃO] Pipeline - Após filtro status:', afterStatus.length, afterStatus.map(a => ({ id: a.id, status: a.status })));
+
+    const afterDate = afterStatus.filter((ativo) => new Date(ativo.dataHoraInicio).getTime() >= Date.now());
+    console.log('[INVESTIGAÇÃO] Pipeline - Após filtro data:', afterDate.length, afterDate.map(a => ({ id: a.id, dataHoraInicio: a.dataHoraInicio, now: Date.now(), diff: new Date(a.dataHoraInicio).getTime() - Date.now() })));
+
+    const proximosAtivos = afterDate
       .sort(byStartDate)
       .slice(0, 6);
+
+    // INVESTIGAÇÃO: viewModel final
+    console.log('[INVESTIGAÇÃO] viewModel.proximosAtivos:', proximosAtivos.length, proximosAtivos.map(a => ({ id: a.id, titulo: a.titulo })));
+
     const preferencias = new Set(user?.preferenciasEsportivas ?? []);
     const ativosRecomendados = proximosAtivos
       .filter((ativo) => preferencias.has(ativo.modalidade))
       .slice(0, 6);
-    const locaisFiltrados = locais.filter((local) => {
-      const value = normalize(termoBusca);
-      if (!value) return true;
-      return [local.nome, local.bairro, local.categoria, local.descricao].map(normalize).some((field) => field.includes(value));
-    });
+    const locaisFiltrados = locais;
 
     return {
       locaisById,
@@ -282,7 +301,7 @@ export default function HomeScreen() {
       ativosRecomendados,
       locaisFiltrados,
     };
-  }, [ativos, locais, participacoesUsuario, termoBusca, user?.preferenciasEsportivas]);
+  }, [ativos, locais, participacoesUsuario, user?.preferenciasEsportivas]);
 
   if (isLoading) return <HomeLoading />;
 
@@ -304,20 +323,11 @@ export default function HomeScreen() {
     viewModel.ativosRecomendados.length > 0 ||
     viewModel.locaisFiltrados.length > 0;
 
-  if (!hasContent && !termoBusca) return <EmptyHome />;
+  if (!hasContent) return <EmptyHome />;
 
   return (
     <AppScreen variant="warm">
       <PromoCarousel />
-      <SearchField value={termoBusca} onChange={setTermoBusca} />
-
-      <div className="flex flex-wrap gap-2">
-        {(user?.preferenciasEsportivas ?? []).slice(0, 4).map((preferencia) => (
-          <Badge key={preferencia} variant="accent">
-            {preferencia}
-          </Badge>
-        ))}
-      </div>
 
       <AtivosSection
         title="Proximos de voce"
@@ -340,8 +350,6 @@ export default function HomeScreen() {
           Nenhum resultado encontrado para sua busca.
         </div>
       )}
-
-      <CreateAtivoPanel />
     </AppScreen>
   );
 }

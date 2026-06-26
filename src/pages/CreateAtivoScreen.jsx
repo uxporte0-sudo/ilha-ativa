@@ -439,6 +439,15 @@ export default function CreateAtivoScreen() {
       setPublicationErrors([]);
     },
     onSuccess: async (createdAtivo) => {
+      console.log('[INVESTIGAÇÃO] Ativo criado:', {
+        id: createdAtivo.id,
+        titulo: createdAtivo.titulo,
+        status: createdAtivo.status,
+        dataHoraInicio: createdAtivo.dataHoraInicio,
+        localId: createdAtivo.localId,
+        modalidade: createdAtivo.modalidade
+      });
+
       setPublicationState('publicado');
       setPublicationErrors([]);
 
