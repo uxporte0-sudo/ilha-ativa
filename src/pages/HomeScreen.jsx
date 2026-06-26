@@ -1,12 +1,13 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { ChevronRight, AlertCircle, ArrowRight, Sparkles } from 'lucide-react';
+import { ChevronRight, AlertCircle, ArrowRight } from 'lucide-react';
 import AppScreen from '@/components/layout/AppScreen';
 import CreateAtivoAction from '@/components/navigation/CreateAtivoAction';
 import AtivoHomeCard from '@/components/product/AtivoHomeCard';
 import LocalCard from '@/components/product/LocalCard';
 import SearchField from '@/components/product/SearchField';
+import PromoCarousel from '@/components/product/PromoCarousel';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -97,7 +98,7 @@ function HomeError({ onRetry }) {
 function EmptyHome() {
   return (
     <AppScreen variant="warm">
-      <HomeHeader userName="IlhAtiva" />
+      <PromoCarousel />
       <div className="rounded-[var(--radius-card)] border border-borderSemantic-subtle bg-container-secondary p-5 text-center shadow-card">
         <h2 className="text-xl font-bold text-text-primary">Ainda nao ha Ativos por aqui</h2>
         <p className="mt-2 text-sm leading-6 text-text-secondary">
@@ -106,27 +107,6 @@ function EmptyHome() {
       </div>
       <CreateAtivoPanel />
     </AppScreen>
-  );
-}
-
-function HomeHeader({ userName }) {
-  return (
-    <header className="space-y-4">
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <p className="text-sm font-semibold text-text-tertiary">IlhAtiva</p>
-          <h1 className="mt-1 text-3xl font-bold leading-10 text-text-primary">
-            Oi, {userName}
-          </h1>
-          <p className="mt-1 text-sm leading-5 text-text-secondary">
-            Descubra Ativos, encontre Locais e movimente sua ilha.
-          </p>
-        </div>
-        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-brand-secondary text-text-primary shadow-sm">
-          <Sparkles className="h-6 w-6" />
-        </span>
-      </div>
-    </header>
   );
 }
 
@@ -328,7 +308,7 @@ export default function HomeScreen() {
 
   return (
     <AppScreen variant="warm">
-      <HomeHeader userName={user?.nome?.split(' ')[0] ?? 'Atleta'} />
+      <PromoCarousel />
       <SearchField value={termoBusca} onChange={setTermoBusca} />
 
       <div className="flex flex-wrap gap-2">
