@@ -25,14 +25,12 @@ export default function PresentationOverlay() {
 
   const handleStartDemo = async () => {
     try {
-      if (document.fullscreenEnabled) {
+      if (document.fullscreenEnabled && !document.fullscreenElement) {
         await document.documentElement.requestFullscreen();
       }
     } catch (error) {
-      // Ignorar falha e continuar normalmente
       console.warn('Fullscreen não disponível:', error);
-    } finally {
-      handleDismiss();
+      setIsVisible(false);
     }
   };
 
