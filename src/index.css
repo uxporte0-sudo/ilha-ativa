@@ -124,7 +124,12 @@
 
 @layer base {
   * {
-    @apply border-border outline-ring;
+    @apply border-border;
+  }
+
+  /* Aplica outline-ring apenas a elementos interativos, não a canvas */
+  *:not(canvas) {
+    @apply outline-ring;
   }
 
   body {
