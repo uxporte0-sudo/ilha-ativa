@@ -10,14 +10,18 @@ const ILHABELA_CENTER = [-45.3436, -23.7738];
 /**
  * MapCanvas
  *
- * Componente de renderização do mapa usando MapLibre GL.
- * Utiliza ResizeObserver para detectar mudanças de tamanho do container
+ * Componente de renderizacao do mapa usando MapLibre GL.
+ * Utiliza ResizeObserver para detectar mudancas de tamanho do container
  * e atualizar o mapa automaticamente.
  *
- * Consome a camada LocalLayer para obter os Locais preparados para renderização.
- * Os marcadores dos Locais são renderizados pelo componente LocalMarkers.
+ * Consome a camada LocalLayer para obter os Locais preparados para renderizacao.
+ * Os marcadores dos Locais sao renderizados pelo componente LocalMarkers.
+ *
+ * @param {Object} props
+ * @param {string} props.className - Classes CSS adicionais
+ * @param {Function} props.onSelectLocal - Callback (longitude, latitude, props) ao clicar pin
  */
-export default function MapCanvas({ className }) {
+export default function MapCanvas({ className, onSelectLocal }) {
   const containerRef = useRef(null);
   const mapRef = useRef(null);
   const [mapInstance, setMapInstance] = useState(null);
@@ -60,29 +64,6 @@ export default function MapCanvas({ className }) {
       mapRef.current = map;
       setMapInstance(map);
 
-      // Event listeners para debug
-      map.on('load', () => {
-        console.log('[MAP] load');
-      });
-
-      map.on('style.load', () => {
-        console.log('[MAP] style.load');
-      });
-
-      map.on('render', () => {
-        console.log('[MAP] render');
-      });
-
-      map.on('idle', () => {
-        console.log('[MAP] idle');
-      });
-
-      map.on('error', (e) => {
-        console.error('[MAP] error', e);
-      });
-
-      // ResizeObserver para detectar mudanças de tamanho
-      // Garante que o mapa se adapte quando o container mudar
       resizeObserver = new ResizeObserver(() => {
         if (mapRef.current) {
           mapRef.current.resize();
@@ -91,7 +72,6 @@ export default function MapCanvas({ className }) {
 
       resizeObserver.observe(containerRef.current);
 
-      // Cleanup function
       return () => {
         if (resizeObserver) {
           resizeObserver.disconnect();
@@ -105,26 +85,13 @@ export default function MapCanvas({ className }) {
     }
   }, []);
 
-  // Log da camada de Locais (para debug)
-  useEffect(() => {
-    if (!loading && !error) {
-      console.log('[MAP] LocalLayer ready:', {
-        totalFeatures: featureCollection.features.length,
-        sample: featureCollection.features.slice(0, 2),
-      });
-    }
-    if (error) {
-      console.error('[MAP] LocalLayer error:', error);
-    }
-  }, [featureCollection, loading, error]);
-
   return (
     <>
       <div
         ref={containerRef}
-        className={className ? `map-canvas ${className}` : 'map-canvas'}
+        className={className ? 'map-canvas ' + className : 'map-canvas'}
       />
-      <LocalMarkers featureCollection={featureCollection} map={mapInstance} />
+      <LocalMarkers featureCollection={featureCollection} map={mapInstance} onSelectLocal={onSelectLocal} />
     </>
   );
 }
