@@ -11,9 +11,10 @@ import maplibregl from 'maplibre-gl';
  * @param {Object} props.map - Instancia do mapa MapLibre
  * @param {number} props.latitude - Latitude do Local
  * @param {number} props.longitude - Longitude do Local
- * @param {Function} props.onClick - Callback (longitude, latitude) ao clicar
+ * @param {Object} props.entity - Dados do Local
+ * @param {Function} props.onOpen - Callback (entity) ao clicar
  */
-export default function LocalPin({ map, latitude, longitude, onClick }) {
+export default function LocalPin({ map, latitude, longitude, entity, onOpen }) {
   const markerRef = useRef(null);
 
   useEffect(() => {
@@ -27,10 +28,10 @@ export default function LocalPin({ map, latitude, longitude, onClick }) {
 
     markerRef.current = marker;
 
-    if (onClick) {
+    if (onOpen && entity) {
       const element = marker.getElement();
       element.style.cursor = 'pointer';
-      element.addEventListener('click', () => onClick(longitude, latitude));
+      element.addEventListener('click', () => onOpen(entity));
     }
 
     return () => {
@@ -39,7 +40,7 @@ export default function LocalPin({ map, latitude, longitude, onClick }) {
         markerRef.current = null;
       }
     };
-  }, [map, latitude, longitude, onClick]);
+  }, [map, latitude, longitude, entity, onOpen]);
 
   return null;
 }

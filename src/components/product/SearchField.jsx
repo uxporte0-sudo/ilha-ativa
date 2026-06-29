@@ -5,7 +5,7 @@ export default function SearchField({ value, onChange, placeholder = 'Buscar Ati
   return (
     <label
       className={cn(
-        'flex h-12 w-full items-center gap-3 rounded-[var(--radius-control)] border border-borderSemantic-subtle bg-container-secondary px-4 text-sm shadow-sm focus-within:border-borderSemantic-focus focus-within:ring-2 focus-within:ring-interaction-focus/30',
+        'flex h-12 w-full items-center gap-3 rounded-[var(--radius-control)] border border-borderSemantic-subtle bg-surface-base px-4 text-sm shadow-sm focus-within:border-borderSemantic-focus focus-within:ring-2 focus-within:ring-interaction-focus/30',
         className
       )}
     >

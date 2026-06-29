@@ -1,5 +1,4 @@
 import { UsersRound, Signal, MapPin } from 'lucide-react';
-import { Link } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 import QuadraPlaceholder from '@/components/assets/Quadra_placeholder.jpg';
 
@@ -44,8 +43,9 @@ export default function AtivoHomeCard({
   ativo,
   local,
   participantes = 0,
+  onOpen,
 }) {
-    const imagem =
+  const imagem =
     ativo.imagem ||
     local?.foto ||
     local?.imagem ||
@@ -53,75 +53,58 @@ export default function AtivoHomeCard({
 
   const distancia = local?.distancia ?? '—';
 
-  return (
-    <Link
-      to={`/ativos/${ativo.id}`}
-      className="
-        w-[132px]
-        shrink-0
-        overflow-hidden
-        rounded-xl
-        border
-        border-borderSemantic-subtle
-        bg-surface-base
-        shadow-card
-        transition-all
-        hover:-translate-y-1
-      "
-    >
+  const cardContent = (
+    <>
       {/* Imagem da quadra */}
-<div className="relative aspect-square overflow-hidden rounded-t-xl">
+      <div className="relative aspect-square overflow-hidden rounded-t-xl">
+        <img
+          src={imagem}
+          alt={local?.nome ?? ativo.titulo}
+          className="h-full w-full object-cover"
+        />
 
-  <img
-    src={imagem}
-    alt={local?.nome ?? ativo.titulo}
-    className="h-full w-full object-cover"
-  />
+        {/* Hora */}
+        <Badge
+          variant="secondary"
+          className="
+            absolute
+            left-2
+            top-2
+            rounded-md
+            bg-container-primary/95
+            px-2
+            py-0
+            text-[10px]
+            font-bold
+            uppercase
+            shadow-sm
+          "
+        >
+          {formatHora(ativo.dataHoraInicio)}
+        </Badge>
 
-      {/* Hora */}
-      <Badge
-        variant="secondary"
-        className="
-          absolute
-          left-2
-          top-2
-          rounded-md
-          bg-container-primary/95
-          px-2
-          py-0
-          text-[10px]
-          font-bold
-          uppercase
-          shadow-sm
-        "
-      >
-        {formatHora(ativo.dataHoraInicio)}
-      </Badge>
-
-      {/* Distância */}
-      <Badge
-        variant="secondary"
-        className="
-          absolute
-          bottom-2
-          right-2
-          rounded-md
-          bg-container-primary/95
-          px-2
-          py-0
-          text-[9px]
-          shadow-sm
-        "
-      >
-        <MapPin className="mr-1 h-3 w-3" />
-        {distancia}
-      </Badge>
-
-    </div>
+        {/* Distância */}
+        <Badge
+          variant="secondary"
+          className="
+            absolute
+            bottom-2
+            right-2
+            rounded-md
+            bg-container-primary/95
+            px-2
+            py-0
+            text-[9px]
+            shadow-sm
+          "
+        >
+          <MapPin className="mr-1 h-3 w-3" />
+          {distancia}
+        </Badge>
+      </div>
 
       {/* Conteúdo */}
       <div className="space-y-1 px-2 pb-2">
-
         <div className="text-base leading-none">
           {getEmoji(ativo.modalidade)}
         </div>
@@ -145,8 +128,53 @@ export default function AtivoHomeCard({
           <Signal className="h-3 w-3" />
           <span>{formatNivel(ativo.nivelDificuldade)}</span>
         </div>
-
       </div>
-    </Link>
+    </>
+  );
+
+  if (onOpen) {
+    return (
+      <button
+        type="button"
+        onClick={() => {
+          console.log('[ATIVO_OPEN] Card clicked', { id: ativo.id, titulo: ativo.titulo, hasCallback: !!onOpen });
+          onOpen(ativo);
+        }}
+        className="
+          w-[132px]
+          shrink-0
+          overflow-hidden
+          rounded-xl
+          border
+          border-borderSemantic-subtle
+          bg-surface-base
+          shadow-card
+          transition-all
+          hover:-translate-y-1
+          text-left
+        "
+      >
+        {cardContent}
+      </button>
+    );
+  }
+
+  return (
+    <div
+      className="
+        w-[132px]
+        shrink-0
+        overflow-hidden
+        rounded-xl
+        border
+        border-borderSemantic-subtle
+        bg-surface-base
+        shadow-card
+        transition-all
+        hover:-translate-y-1
+      "
+    >
+      {cardContent}
+    </div>
   );
 }

@@ -30,6 +30,7 @@ generated/
 *.njsproj
 *.sln
 *.sw?
+*.ps1
 
 .env
 .vite

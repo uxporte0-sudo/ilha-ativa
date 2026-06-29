@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { AlertCircle, CalendarDays, ChevronLeft, ChevronRight, Clock3, History, Plus, Sparkles } from 'lucide-react';
+import { AlertCircle, CalendarDays, ChevronLeft, ChevronRight, Clock3, Plus, Sparkles } from 'lucide-react';
 import AppScreen from '@/components/layout/AppScreen';
 import AtivoHomeCard from '@/components/product/AtivoHomeCard';
 import { Badge } from '@/components/ui/badge';
@@ -84,7 +84,7 @@ function AgendaLoading() {
 function AgendaError({ onRetry }) {
   return (
     <AppScreen variant="warm">
-      <div className="rounded-[var(--radius-card)] border border-error/20 bg-container-secondary p-5 shadow-card">
+      <div className="rounded-[var(--radius-card)] border border-error/20 bg-surface-base p-5 shadow-card">
         <div className="mb-3 flex items-center gap-2 text-error">
           <AlertCircle className="h-5 w-5" />
           <h1 className="text-lg font-bold text-text-primary">Nao foi possivel carregar a Agenda</h1>
@@ -100,7 +100,7 @@ function AgendaError({ onRetry }) {
 
 function AgendaEmpty({ selectedDateKey }) {
   return (
-    <section className="rounded-[var(--radius-card)] border border-borderSemantic-subtle bg-container-secondary p-5 text-center shadow-card">
+    <section className="rounded-[var(--radius-card)] border border-borderSemantic-subtle bg-surface-base p-5 text-center shadow-card">
       <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-brand-primary-subtle text-brand-primary">
         <CalendarDays className="h-6 w-6" />
       </div>
@@ -118,37 +118,12 @@ function AgendaEmpty({ selectedDateKey }) {
   );
 }
 
-function AgendaHeader({ userName, selectedDateKey }) {
-  return (
-    <header className="rounded-[var(--radius-card)] bg-surface-inverse p-5 text-text-inverse shadow-card">
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <Badge variant="secondary">Agenda</Badge>
-          <h1 className="mt-3 text-3xl font-bold leading-10">Sua pratica no tempo</h1>
-          <p className="mt-1 text-sm leading-5 text-text-inverse/80">
-            {userName}, acompanhe Ativos criados, confirmados e recentes.
-          </p>
-        </div>
-        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-container-primary text-brand-primary">
-          <Sparkles className="h-6 w-6" />
-        </span>
-      </div>
-      <Button asChild className="mt-5 w-full" variant="secondary">
-        <Link to={getCreateAtivoPath(selectedDateKey)}>
-          <Plus className="h-4 w-4" />
-          Criar Ativo na data selecionada
-        </Link>
-      </Button>
-    </header>
-  );
-}
-
 function CalendarMonth({ monthDate, selectedDateKey, markers, onSelectDay, onPreviousMonth, onNextMonth }) {
   const days = useMemo(() => buildCalendarDays(monthDate), [monthDate]);
   const weekDays = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
 
   return (
-    <section className="rounded-[var(--radius-card)] border border-borderSemantic-subtle bg-container-secondary p-4 shadow-card">
+    <section className="rounded-[var(--radius-card)] border border-borderSemantic-subtle bg-surface-base p-4 shadow-card">
       <div className="mb-4 flex items-center justify-between gap-3">
         <Button type="button" size="icon" variant="outline" onClick={onPreviousMonth} aria-label="Mes anterior">
           <ChevronLeft className="h-4 w-4" />
@@ -198,7 +173,7 @@ function AgendaItem({ item }) {
   return (
     <Link
       to={`/ativos/${ativo.id}`}
-      className="block rounded-[var(--radius-card)] border border-borderSemantic-subtle bg-container-secondary p-4 shadow-card outline-none transition-transform hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-interaction-focus"
+      className="block rounded-[var(--radius-card)] border border-borderSemantic-subtle bg-surface-base p-4 shadow-card outline-none transition-transform hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-interaction-focus"
     >
       <div className="flex items-start justify-between gap-3">
         <div>
@@ -247,7 +222,7 @@ function AgendaSection({ title, icon: Icon, items, emptyLabel, horizontal = fals
           </div>
         )
       ) : (
-        <div className="rounded-[var(--radius-card)] border border-borderSemantic-subtle bg-container-secondary p-4 text-sm leading-6 text-text-secondary shadow-card">
+        <div className="rounded-[var(--radius-card)] border border-borderSemantic-subtle bg-surface-ba p-4 text-sm leading-6 text-text-secondary shadow-card">
           {emptyLabel}
         </div>
       )}
@@ -299,7 +274,6 @@ export default function AgendaScreen() {
 
   return (
     <AppScreen className="gap-5" variant="warm">
-      <AgendaHeader userName={user?.nome?.split(' ')[0] ?? 'Atleta'} selectedDateKey={selectedDateKey} />
 
       <CalendarMonth
         monthDate={monthDate}
@@ -323,20 +297,27 @@ export default function AgendaScreen() {
 
       {!hasAnyContent ? <AgendaEmpty selectedDateKey={selectedDateKey} /> : null}
 
-      <section className="rounded-[var(--radius-card)] border border-borderSemantic-subtle bg-container-secondary p-4 shadow-card">
-        <Badge variant="accent">Dia selecionado</Badge>
-        <h2 className="mt-2 text-2xl font-bold capitalize text-text-primary">{formatSelectedDay(selectedDate)}</h2>
-        <p className="mt-1 text-sm leading-5 text-text-secondary">
+      <section className="rounded-[var(--radius-card)] border border-borderSemantic-subtle bg-surface-base p-4 shadow-card">
+        <div className="flex items-start justify-between gap-3">
+          <h2 className="text-2xl font-bold capitalize text-text-primary">{formatSelectedDay(selectedDate)}</h2>
+          <Button asChild variant="outlined" size="sm" className="shrink-0">
+            <Link to={getCreateAtivoPath(selectedDateKey)}>
+              <Plus className="h-4 w-4" />
+              Criar Ativo
+            </Link>
+          </Button>
+        </div>
+        <p className="mt-2 text-sm leading-5 text-text-secondary">
           Compromissos confirmados e Ativos organizados por voce nesta data.
         </p>
+        {agenda.ativosDoDia.length > 0 ? (
+          <div className="mt-4 grid gap-3">
+            {agenda.ativosDoDia.map((item) => <AgendaItem key={item.ativo.id} item={item} />)}
+          </div>
+        ) : (
+          <p className="mt-4 text-sm leading-5 text-text-secondary">Nenhum Ativo confirmado ou organizado nesta data.</p>
+        )}
       </section>
-
-      <AgendaSection
-        title="Ativos do dia"
-        icon={CalendarDays}
-        items={agenda.ativosDoDia}
-        emptyLabel="Nenhum Ativo confirmado ou organizado nesta data."
-      />
 
       <AgendaSection
         title="Proximos Ativos"
@@ -346,12 +327,7 @@ export default function AgendaScreen() {
         horizontal
       />
 
-      <AgendaSection
-        title="Historico recente"
-        icon={History}
-        items={agenda.historicoRecente}
-        emptyLabel="Seu historico recente ainda nao tem Ativos neste recorte."
-      />
+      
     </AppScreen>
   );
 }

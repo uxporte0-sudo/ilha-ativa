@@ -11,9 +11,9 @@ import LocalPin from './LocalPin';
  * @param {Object} props
  * @param {Object} props.featureCollection - FeatureCollection GeoJSON da LocalLayer
  * @param {Object} props.map - Referencia ao mapa MapLibre
- * @param {Function} props.onSelectLocal - Callback (longitude, latitude, props) ao clicar pin
+ * @param {Function} props.onOpenLocal - Callback (entity) ao clicar pin
  */
-export default function LocalMarkers({ featureCollection, map, onSelectLocal }) {
+export default function LocalMarkers({ featureCollection, map, onOpenLocal }) {
   if (!map || !featureCollection?.features?.length) {
     return null;
   }
@@ -28,7 +28,8 @@ export default function LocalMarkers({ featureCollection, map, onSelectLocal }) 
             map={map}
             latitude={latitude}
             longitude={longitude}
-            onClick={onSelectLocal ? (lng, lat) => onSelectLocal(lng, lat, feature.properties) : undefined}
+            entity={feature.properties}
+            onOpen={onOpenLocal}
           />
         );
       })}

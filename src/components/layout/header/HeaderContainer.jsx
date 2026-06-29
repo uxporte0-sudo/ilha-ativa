@@ -1,4 +1,4 @@
-import { cn } from '@/lib/utils';
+﻿import { cn } from '@/lib/utils';
 
 /**
  * HeaderContainer
@@ -17,7 +17,7 @@ export default function HeaderContainer({
   variant = 'DEFAULT'
 }) {
   const baseStyles = cn(
-    'fixed top-0 left-0 right-0 z-50',
+    'shrink-0',
     'flex items-center justify-between',
     'h-16 px-4',
     'bg-surface-base/95 backdrop-blur-xl border-b border-borderSemantic-subtle',

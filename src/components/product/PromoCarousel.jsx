@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+﻿import { useState, useCallback, useEffect } from 'react';
 import useEmblaCarousel from 'embla-carousel-react';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 
@@ -8,10 +8,6 @@ import PromoSlide from './PromoSlide';
 import CarouselIndicator from './CarouselIndicator';
 import { PROMO_TYPES } from './promo.types';
 
-/**
- * Dados mockados para o PromoCarousel
- * Em produção, estes dados viriam de uma API/CMS
- */
 const MOCK_SLIDES = [
   {
     id: 'slide-1',
@@ -48,20 +44,6 @@ const MOCK_SLIDES = [
   },
 ];
 
-/**
- * PromoCarousel - Carrossel promocional principal
- * 
- * Responsabilidades:
- * - Controlar os slides (embla-carousel)
- * - Controlar o índice atual
- * - Renderizar PromoSlide
- * - Renderizar CarouselIndicator
- * 
- * @param {Object} props
- * @param {Array} [props.slides] - Array de slides (usa mock se não fornecido)
- * @param {number} [props.autoPlayInterval] - Intervalo de autoplay em ms (0 para desabilitar)
- * @param {string} [props.className] - Classes CSS adicionais
- */
 export default function PromoCarousel({ 
   slides = MOCK_SLIDES,
   autoPlayInterval = 5000,
@@ -76,7 +58,6 @@ export default function PromoCarousel({
   const [canScrollPrev, setCanScrollPrev] = useState(false);
   const [canScrollNext, setCanScrollNext] = useState(false);
 
-  // Atualiza estado de navegação
   const updateNavigationState = useCallback((api) => {
     if (!api) return;
     setCanScrollPrev(api.canScrollPrev());
@@ -84,7 +65,6 @@ export default function PromoCarousel({
     setCurrentIndex(api.selectedScrollSnap());
   }, []);
 
-  // Efeito para sincronizar com a API do Embla
   useEffect(() => {
     if (!emblaApi) return;
     
@@ -100,22 +80,16 @@ export default function PromoCarousel({
     };
   }, [emblaApi, updateNavigationState]);
 
-  // Autoplay
   useEffect(() => {
     if (!emblaApi || autoPlayInterval <= 0) return;
 
     const interval = setInterval(() => {
-      if (emblaApi.canScrollNext()) {
-        emblaApi.scrollNext();
-      } else {
-        emblaApi.scrollTo(0);
-      }
+      emblaApi.scrollNext();
     }, autoPlayInterval);
 
     return () => clearInterval(interval);
   }, [emblaApi, autoPlayInterval]);
 
-  // Handlers de navegação
   const scrollPrev = useCallback(() => {
     emblaApi?.scrollPrev();
   }, [emblaApi]);
@@ -128,7 +102,6 @@ export default function PromoCarousel({
     emblaApi?.scrollTo(index);
   }, [emblaApi]);
 
-  // Keyboard navigation
   const handleKeyDown = useCallback((event) => {
     if (event.key === 'ArrowLeft') {
       event.preventDefault();
@@ -141,83 +114,83 @@ export default function PromoCarousel({
 
   return (
     <div 
-      className={cn('relative', className)}
+      className={cn('w-full', className)}
       role="region"
       aria-roledescription="carousel"
       aria-label="Promoções em destaque"
       onKeyDownCapture={handleKeyDown}
     >
-      {/* Viewport do carrossel */}
-      <div className="overflow-hidden" ref={emblaRef}>
-        <div className="flex -ml-4">
-          {slides.map((slide) => (
-            <div 
-              key={slide.id} 
-              className="min-w-0 shrink-0 grow-0 basis-full pl-4"
-              role="group"
-              aria-roledescription="slide"
-              aria-label={slide.title}
-            >
-              <PromoSlide
-                image={slide.image}
-                title={slide.title}
-                description={slide.description}
-                cta={slide.cta}
-              />
-            </div>
-          ))}
+      <div 
+        className="relative w-full aspect-video max-h-[20dvh] rounded-2xl overflow-hidden bg-surface-base"
+      >
+        <div className="absolute inset-0" ref={emblaRef}>
+          <div className="flex h-full">
+            {slides.map((slide) => (
+              <div 
+                key={slide.id} 
+                className="min-w-0 shrink-0 grow-0 basis-full h-full"
+                role="group"
+                aria-roledescription="slide"
+                aria-label={slide.title}
+              >
+                <PromoSlide
+                  image={slide.image}
+                  title={slide.title}
+                  description={slide.description}
+                  cta={slide.cta}
+                />
+              </div>
+            ))}
+          </div>
         </div>
+
+        <Button
+          type="button"
+          variant="outline"
+          size="icon"
+          className={cn(
+            'absolute left-2 top-1/2 -translate-y-1/2 md:left-0 md:-ml-6',
+            'h-10 w-10 rounded-full',
+            'bg-black/30 hover:bg-black/50',
+            'text-white',
+            'border-white/20',
+            'shadow-lg',
+            'transition-all duration-200',
+            'focus:outline-none focus:ring-2 focus:ring-white/50',
+            !canScrollPrev && 'opacity-30 pointer-events-none'
+          )}
+          disabled={!canScrollPrev}
+          onClick={scrollPrev}
+          aria-label="Slide anterior"
+        >
+          <ArrowLeft className="h-5 w-5" aria-hidden="true" />
+          <span className="sr-only">Slide anterior</span>
+        </Button>
+
+        <Button
+          type="button"
+          variant="outline"
+          size="icon"
+          className={cn(
+            'absolute right-2 top-1/2 -translate-y-1/2 md:right-0 md:-mr-6',
+            'h-10 w-10 rounded-full',
+            'bg-black/30 hover:bg-black/50',
+            'text-white',
+            'border-white/20',
+            'shadow-lg',
+            'transition-all duration-200',
+            'focus:outline-none focus:ring-2 focus:ring-white/50',
+            !canScrollNext && 'opacity-30 pointer-events-none'
+          )}
+          disabled={!canScrollNext}
+          onClick={scrollNext}
+          aria-label="Próximo slide"
+        >
+          <ArrowRight className="h-5 w-5" aria-hidden="true" />
+          <span className="sr-only">Próximo slide</span>
+        </Button>
       </div>
 
-      {/* Botão anterior */}
-      <Button
-        type="button"
-        variant="outline"
-        size="icon"
-        className={cn(
-          'absolute left-0 top-1/2 -translate-y-1/2 -ml-4 md:-ml-8',
-          'h-12 w-12 rounded-full',
-          'bg-white/10 hover:bg-white/20',
-          'text-white',
-          'border-white/20 hover:border-white/30',
-          'shadow-lg',
-          'transition-all duration-200',
-          'focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:ring-offset-black/50',
-          !canScrollPrev && 'opacity-30 pointer-events-none'
-        )}
-        disabled={!canScrollPrev}
-        onClick={scrollPrev}
-        aria-label="Slide anterior"
-      >
-        <ArrowLeft className="h-5 w-5" aria-hidden="true" />
-        <span className="sr-only">Slide anterior</span>
-      </Button>
-
-      {/* Botão próximo */}
-      <Button
-        type="button"
-        variant="outline"
-        size="icon"
-        className={cn(
-          'absolute right-0 top-1/2 -translate-y-1/2 -mr-4 md:-mr-8',
-          'h-12 w-12 rounded-full',
-          'bg-white/10 hover:bg-white/20',
-          'text-white',
-          'border-white/20 hover:border-white/30',
-          'shadow-lg',
-          'transition-all duration-200',
-          'focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:ring-offset-black/50',
-          !canScrollNext && 'opacity-30 pointer-events-none'
-        )}
-        disabled={!canScrollNext}
-        onClick={scrollNext}
-        aria-label="Próximo slide"
-      >
-        <ArrowRight className="h-5 w-5" aria-hidden="true" />
-        <span className="sr-only">Próximo slide</span>
-      </Button>
-
-      {/* Indicadores */}
       <CarouselIndicator
         count={slides.length}
         currentIndex={currentIndex}
@@ -227,5 +200,4 @@ export default function PromoCarousel({
   );
 }
 
-// Exportar slides mockados para uso externo se necessário
 export { MOCK_SLIDES };

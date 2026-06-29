@@ -14,7 +14,7 @@ const buttonVariants = cva(
         destructive:
           "bg-error text-error-foreground shadow-sm hover:bg-error/90",
         outline:
-          "border border-borderSemantic bg-container-secondary text-text-primary shadow-sm hover:bg-brand-primary-subtle",
+          "border border-borderSemantic bg-surface-base text-text-primary shadow-sm hover:bg-brand-primary-subtle",
         secondary:
           "bg-brand-secondary text-text-primary shadow-sm hover:brightness-95",
         ghost: "text-text-primary hover:bg-container-primary",

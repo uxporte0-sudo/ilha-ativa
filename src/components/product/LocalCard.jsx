@@ -2,14 +2,14 @@ import { ImageIcon } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 
-export default function LocalCard({ local, className, onView }) {
-  if (onView) {
+export default function LocalCard({ local, className, onOpen }) {
+  if (onOpen) {
     return (
       <button
         type="button"
-        onClick={() => onView(local)}
+        onClick={() => onOpen(local)}
         className={cn(
-          'flex h-24 w-[180px] shrink-0 items-center gap-3 rounded-xl border border-borderSemantic-subtle bg-container-secondary p-2 text-left shadow-card transition-transform hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-interaction-focus',
+          'flex h-24 w-[180px] shrink-0 items-center gap-3 rounded-xl border border-borderSemantic-subtle bg-surface-base p-2 text-left shadow-card transition-transform hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-interaction-focus',
           className
         )}
       >

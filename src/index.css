@@ -48,7 +48,7 @@
     --surface-inverse: #1F1F14;
     --container-primary: #FAF4EB;
     --container-primary-strong: #F9EDDC;
-    --container-secondary: #FEFEFE;
+    --container-secondary: #f2fdfc;
     --container-secondary-strong: #CBECE6;
     --container-accent: #F8F3E7;
     --container-accent-strong: #F8F1DD;
@@ -123,13 +123,21 @@
 }
 
 @layer base {
-  * {
+  *,
+  *::before,
+  *::after {
     @apply border-border;
   }
 
-  /* Aplica outline-ring apenas a elementos interativos, não a canvas */
   *:not(canvas) {
     @apply outline-ring;
+  }
+
+  html,
+  body,
+  #root {
+    height: 100%;
+    overflow: hidden;
   }
 
   body {
@@ -163,6 +171,15 @@
     background-image: linear-gradient(135deg, #19e6ce 0%, #3da5c2 100%);
   }
 
+  .scrollbar-none {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+
   @media (max-width: 767px) {
     .scrollbar-none-mobile {
       scrollbar-width: none;
@@ -173,5 +190,3 @@
     }
   }
 }
-
-

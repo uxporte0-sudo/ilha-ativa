@@ -4,6 +4,7 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import './MapCanvas.css';
 import { useLocalLayer } from './LocalLayer';
 import LocalMarkers from './LocalMarkers';
+import AtivoMarkers from './AtivoMarkers';
 
 const ILHABELA_CENTER = [-45.3436, -23.7738];
 
@@ -19,9 +20,12 @@ const ILHABELA_CENTER = [-45.3436, -23.7738];
  *
  * @param {Object} props
  * @param {string} props.className - Classes CSS adicionais
- * @param {Function} props.onSelectLocal - Callback (longitude, latitude, props) ao clicar pin
+ * @param {Array} props.ativos - Lista de Ativos
+ * @param {Array} props.locais - Lista de Locais
+ * @param {Function} props.onOpenLocal - Callback (entity) ao clicar pin
+ * @param {Function} props.onOpenAtivo - Callback (ativo) ao clicar pin
  */
-export default function MapCanvas({ className, onSelectLocal }) {
+export default function MapCanvas({ className, ativos, locais, onOpenLocal, onOpenAtivo }) {
   const containerRef = useRef(null);
   const mapRef = useRef(null);
   const [mapInstance, setMapInstance] = useState(null);
@@ -91,7 +95,8 @@ export default function MapCanvas({ className, onSelectLocal }) {
         ref={containerRef}
         className={className ? 'map-canvas ' + className : 'map-canvas'}
       />
-      <LocalMarkers featureCollection={featureCollection} map={mapInstance} onSelectLocal={onSelectLocal} />
+      <LocalMarkers featureCollection={featureCollection} map={mapInstance} onOpenLocal={onOpenLocal} />
+      <AtivoMarkers ativos={ativos} locais={locais} map={mapInstance} onOpenAtivo={onOpenAtivo} />
     </>
   );
 }

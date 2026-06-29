@@ -1,23 +1,29 @@
 import { Link } from 'react-router-dom';
 import {
   AlertCircle,
-  ArrowLeft,
   CalendarDays,
   CheckCircle2,
   Clock3,
   Heart,
   MapPin,
-  ShieldCheck,
-  UserRound,
+  MoreHorizontal,
+  Share2,
+  Flag,
+  Star,
+  Trash2,
+  X,
   UsersRound,
-  XCircle,
+  UserRound,
 } from 'lucide-react';
-import AppScreen from '@/components/layout/AppScreen';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Switch } from '@/components/ui/switch';
 import { cn } from '@/lib/utils';
-import { ViewerSection, ViewerSectionTitle } from '@/components/viewer';
+import {
+  ViewerSection,
+  ViewerHorizontalScroller,
+} from '@/components/viewer';
 
 function formatLabel(value) {
   if (!value) return 'Nao informado';
@@ -26,13 +32,12 @@ function formatLabel(value) {
 
 function formatDate(value) {
   if (!value) return 'Data a confirmar';
-  return new Intl.DateTimeFormat('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' }).format(new Date(value));
+  return new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(new Date(value));
 }
 
-function formatTimeRange(start, end) {
-  if (!start || !end) return 'Horario a confirmar';
-  const formatter = new Intl.DateTimeFormat('pt-BR', { hour: '2-digit', minute: '2-digit' });
-  return `${formatter.format(new Date(start))} - ${formatter.format(new Date(end))}`;
+function formatTime(value) {
+  if (!value) return 'Horario a confirmar';
+  return new Intl.DateTimeFormat('pt-BR', { hour: '2-digit', minute: '2-digit' }).format(new Date(value));
 }
 
 function getInitials(name) {
@@ -45,227 +50,281 @@ function getInitials(name) {
     .toUpperCase();
 }
 
-function AtivoDetailsMessage({ title, description, onRetry, empty = false }) {
-  return (
-    <AppScreen variant="warm">
-      <div className="rounded-[var(--radius-card)] border border-borderSemantic-subtle bg-container-secondary p-5 shadow-card">
-        <div className={cn('mb-3 flex items-center gap-2', empty ? 'text-text-tertiary' : 'text-error')}>
-          <AlertCircle className="h-5 w-5" />
-          <h1 className="text-lg font-bold text-text-primary">{title}</h1>
-        </div>
-        <p className="mb-4 text-sm leading-6 text-text-secondary">{description}</p>
-        <div className="flex flex-col gap-2">
-          {onRetry ? <Button onClick={onRetry}>Tentar novamente</Button> : null}
-          <Button asChild variant="outline">
-            <Link to="/">Voltar para Home</Link>
-          </Button>
-        </div>
-      </div>
-    </AppScreen>
-  );
+function getQuorumStatus(participantesConfirmados, minimoParticipantes) {
+  if (participantesConfirmados >= minimoParticipantes) {
+    return { label: 'Quórum atingido', color: 'text-success' };
+  }
+  const faltam = minimoParticipantes - participantesConfirmados;
+  return { label: `Faltam ${faltam} participante${faltam > 1 ? 's' : ''}`, color: 'text-warning' };
 }
 
-function InfoPill({ icon: Icon, label, value }) {
-  return (
-    <div className="rounded-[var(--radius-card)] bg-container-primary p-3">
-      <div className="flex items-center gap-2 text-xs font-bold uppercase text-text-tertiary">
-        <Icon className="h-4 w-4 text-brand-primary" />
-        {label}
-      </div>
-      <p className="mt-1 text-sm font-medium text-text-primary">{value}</p>
-    </div>
-  );
-}
-
-function AtivoHero({ ativo, local, organizador }) {
-  return (
-    <div className="relative overflow-hidden rounded-[var(--radius-card)] border border-borderSemantic-subtle bg-container-primary shadow-card">
-      <div className="relative h-48 w-full bg-gradient-to-br from-brand-primary/20 via-brand-secondary/10 to-transparent">
-        {ativo.imagem ? (
-          <img src={ativo.imagem} alt={ativo.nome} className="h-full w-full object-cover" />
-        ) : (
-          <div className="flex h-full w-full items-center justify-center">
-            <MapPin className="h-12 w-12 text-brand-primary/40" />
-          </div>
-        )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-        <div className="absolute bottom-0 left-0 right-0 p-4">
-          <div className="flex items-center gap-2">
-            <Badge variant="secondary" className="bg-container-primary/90 text-text-primary backdrop-blur-sm">
-              {formatLabel(ativo.categoria)}
-            </Badge>
-            <Badge variant="secondary" className="bg-container-primary/90 text-text-primary backdrop-blur-sm">
-              {formatLabel(ativo.tipo)}
-            </Badge>
-          </div>
-          <h1 className="mt-2 text-2xl font-bold text-white drop-shadow-lg">{ativo.nome}</h1>
-        </div>
-      </div>
-
-      <div className="p-4">
-        <div className="mb-3 flex items-center gap-3">
-          <Avatar className="h-8 w-8">
-            <AvatarImage src={organizador?.imagem} />
-            <AvatarFallback>{getInitials(organizador?.nome)}</AvatarFallback>
-          </Avatar>
-          <div>
-            <p className="text-xs text-text-tertiary">Organizado por</p>
-            <p className="text-sm font-medium text-text-primary">{organizador?.nome ?? 'Nao informado'}</p>
-          </div>
-        </div>
-
-        <div className="flex flex-col gap-2">
-          <div className="flex items-center gap-2 text-sm text-text-secondary">
-            <CalendarDays className="h-4 w-4 text-brand-primary" />
-            <span>{formatDate(ativo.dataInicio)}</span>
-          </div>
-          <div className="flex items-center gap-2 text-sm text-text-secondary">
-            <Clock3 className="h-4 w-4 text-brand-primary" />
-            <span>{formatTimeRange(ativo.dataInicio, ativo.dataFim)}</span>
-          </div>
-          <div className="flex items-center gap-2 text-sm text-text-secondary">
-            <MapPin className="h-4 w-4 text-brand-primary" />
-            <span>{local?.nome ?? 'Local a confirmar'}</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function ParticipacaoCard({
-  ativo,
-  participacao,
-  participantesConfirmados,
-  actions,
-  isMutating,
-  onInterest,
-  onConfirm,
-  onCancel,
-}) {
-  const statusConfig = {
-    interesse: { icon: Heart, color: 'text-brand-primary', label: 'Interessado' },
-    confirmado: { icon: CheckCircle2, color: 'text-success', label: 'Confirmado' },
-    cancelado: { icon: XCircle, color: 'text-error', label: 'Cancelado' },
+function getModalidadeEmoji(modalidade) {
+  const emojis = {
+    futebol: '⚽',
+    volei: '🏐',
+    vôlei: '🏐',
+    basquete: '🏀',
+    tenis: '🎾',
+    tênis: '🎾',
+    corrida: '🏃',
+    caminhada: '🚶',
+    trilha: '🥾',
+    ciclismo: '🚴',
+    pedal: '🚴',
+    surf: '🏄',
+    yoga: '🧘',
+    natacao: '🏊',
+    natação: '🏊',
   };
 
-  const currentStatus = participacao?.status;
-  const currentConfig = currentStatus ? statusConfig[currentStatus] : null;
+  return emojis[modalidade?.toLowerCase()] ?? '🏅';
+}
+
+function AtivoDetailsMessage({ title, description, onRetry, empty = false }) {
+  return (
+    <div className="rounded-[var(--radius-card)] border border-borderSemantic-subtle bg-container-secondary p-5 shadow-card">
+      <div className={cn('mb-3 flex items-center gap-2', empty ? 'text-text-tertiary' : 'text-error')}>
+        <AlertCircle className="h-5 w-5" />
+        <h1 className="text-lg font-bold text-text-primary">{title}</h1>
+      </div>
+      <p className="mb-4 text-sm leading-6 text-text-secondary">{description}</p>
+      <div className="flex flex-col gap-2">
+        {onRetry ? <Button onClick={onRetry}>Tentar novamente</Button> : null}
+        <Button asChild variant="outline">
+          <Link to="/">Voltar para Home</Link>
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+function AtivoHero({ ativo, onClose }) {
+  const emoji = getModalidadeEmoji(ativo.modalidade);
 
   return (
-    <div className="rounded-[var(--radius-card)] border border-borderSemantic-subtle bg-container-primary p-4 shadow-card">
-      <div className="mb-3 flex items-center justify-between">
+    <div className="flex bg-container-primary p-3">
+      <div className="flex w-16 items-center justify-center">
+        <span className="text-4xl">{emoji}</span>
+      </div>
+      <div className="ml-3 flex flex-1 flex-col">
+        <div className="flex items-start justify-between">
+          <Badge variant="secondary" className="text-xs font-medium">
+            {formatLabel(ativo.modalidade)}
+          </Badge>
+          <button
+            type="button"
+            onClick={onClose}
+            className="flex h-7 w-7 items-center justify-center rounded-full bg-container-tertiary/50 text-text-secondary hover:bg-container-tertiary"
+            aria-label="Fechar"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+        <h1 className="mt-1 text-base font-bold leading-tight text-text-primary">
+          {ativo.titulo}
+        </h1>
+        <div className="mt-2 flex items-center gap-3 text-xs text-text-secondary">
+          <div className="flex items-center gap-1">
+            <CalendarDays className="h-3 w-3 text-brand-primary" />
+            <span>{formatDate(ativo.dataHoraInicio)}</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <Clock3 className="h-3 w-3 text-brand-primary" />
+            <span>{formatTime(ativo.dataHoraInicio)}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function AtivoLocationCard({ local }) {
+  return (
+    <ViewerSection className="mx-4">
+      <div className="flex items-start justify-between">
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-brand-primary-subtle">
+            <MapPin className="h-5 w-5 text-brand-primary" />
+          </div>
+          <div>
+            <p className="text-sm font-medium text-text-primary">{local?.nome ?? 'Local a confirmar'}</p>
+            <p className="text-xs text-text-tertiary">{local?.endereco ?? 'Endereco nao informado'}</p>
+            {local?.distancia && (
+              <p className="text-xs text-brand-primary">{local.distancia}</p>
+            )}
+          </div>
+        </div>
+        <Button variant="outline" size="sm" className="shrink-0">
+          Ver no mapa
+        </Button>
+      </div>
+    </ViewerSection>
+  );
+}
+
+function AtivoQuorum({ participantesConfirmados, minimoParticipantes }) {
+  const progresso = Math.min((participantesConfirmados / minimoParticipantes) * 100, 100);
+  const status = getQuorumStatus(participantesConfirmados, minimoParticipantes);
+
+  return (
+    <ViewerSection className="mx-4">
+      <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <UsersRound className="h-5 w-5 text-brand-primary" />
-          <h2 className="text-lg font-bold text-text-primary">Participacao</h2>
+          <span className="text-sm font-medium text-text-primary">
+            {participantesConfirmados} / {minimoParticipantes} participantes
+          </span>
         </div>
-        {currentConfig && (
-          <div className={cn('flex items-center gap-1 text-sm font-medium', currentConfig.color)}>
-            <currentConfig.icon className="h-4 w-4" />
-            <span>{currentConfig.label}</span>
-          </div>
-        )}
       </div>
+      <div className="mt-3 h-2 overflow-hidden rounded-full bg-container-tertiary">
+        <div
+          className="h-full rounded-full bg-brand-primary transition-all"
+          style={{ width: `${progresso}%` }}
+        />
+      </div>
+      <p className={cn('mt-2 text-xs font-medium', status.color)}>{status.label}</p>
+    </ViewerSection>
+  );
+}
 
-      <p className="mb-3 text-sm text-text-secondary">
-        {participantesConfirmados} {participantesConfirmados === 1 ? 'pessoa confirmada' : 'pessoas confirmadas'}
-      </p>
-
-      <div className="flex flex-col gap-2">
-        {actions.includes('interesse') && (
-          <Button
-            variant={currentStatus === 'interesse' ? 'default' : 'outline'}
-            className="w-full"
-            disabled={isMutating}
-            onClick={onInterest}
-          >
-            <Heart className="mr-2 h-4 w-4" />
-            Demonstrar Interesse
-          </Button>
-        )}
-        {actions.includes('confirmar') && (
-          <Button
-            variant={currentStatus === 'confirmado' ? 'default' : 'outline'}
-            className="w-full"
-            disabled={isMutating}
-            onClick={onConfirm}
-          >
-            <CheckCircle2 className="mr-2 h-4 w-4" />
-            Confirmar Presenca
-          </Button>
-        )}
-        {actions.includes('cancelar') && (
+function AtivoOrganizerCard({ organizador, isOwner, onTogglePrivacy, onDelete }) {
+  return (
+    <ViewerSection className="mx-4">
+      <div className="flex items-center gap-3">
+        <Avatar className="h-12 w-12">
+          <AvatarImage src={organizador?.imagem} />
+          <AvatarFallback>{getInitials(organizador?.nome)}</AvatarFallback>
+        </Avatar>
+        <div className="flex-1">
+          <p className="text-sm font-medium text-text-primary">{organizador?.nome ?? 'Nao informado'}</p>
+          <p className="text-xs text-text-tertiary">{organizador?.ativosCount ?? 0} ativos criados</p>
+        </div>
+        <UserRound className="h-5 w-5 text-text-tertiary" />
+      </div>
+      {isOwner && (
+        <div className="mt-4 space-y-3 border-t border-borderSemantic-subtle pt-4">
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-text-secondary">Ativo publico</span>
+            <Switch onCheckedChange={onTogglePrivacy} />
+          </div>
           <Button
             variant="outline"
             className="w-full text-error hover:bg-error/10 hover:text-error"
-            disabled={isMutating}
-            onClick={onCancel}
+            onClick={onDelete}
           >
-            <XCircle className="mr-2 h-4 w-4" />
-            Cancelar Participacao
+            <Trash2 className="mr-2 h-4 w-4" />
+            Excluir Ativo
           </Button>
-        )}
-      </div>
+        </div>
+      )}
+    </ViewerSection>
+  );
+}
+
+function AtivoParticipantCard({ participacao }) {
+  return (
+    <div className="flex w-24 flex-col items-center gap-2">
+      <Avatar className="h-14 w-14">
+        <AvatarImage src={participacao.user?.imagem} />
+        <AvatarFallback>{getInitials(participacao.user?.nome)}</AvatarFallback>
+      </Avatar>
+      <p className="w-full truncate text-center text-xs font-medium text-text-primary">
+        {participacao.user?.nome ?? 'Usuario'}
+      </p>
+      <Button variant="outline" size="sm" className="h-7 w-full text-[10px]">
+        Adicionar
+      </Button>
     </div>
   );
 }
 
-function ParticipantesSection({ participacoes }) {
+function AtivoParticipantsCarousel({ participacoes }) {
   if (!participacoes || participacoes.length === 0) return null;
 
   return (
-    <ViewerSection className="bg-container-primary">
-      <ViewerSectionTitle icon={UsersRound}>Participantes</ViewerSectionTitle>
-      <div className="flex flex-col gap-3">
+    <div className="mx-4">
+      <ViewerHorizontalScroller>
         {participacoes.map((participacao) => (
-          <div key={participacao.id} className="flex items-center gap-3">
-            <Avatar className="h-8 w-8">
-              <AvatarImage src={participacao.user?.imagem} />
-              <AvatarFallback>{getInitials(participacao.user?.nome)}</AvatarFallback>
-            </Avatar>
-            <div className="flex-1">
-              <p className="text-sm font-medium text-text-primary">{participacao.user?.nome ?? 'Usuario'}</p>
-              <p className="text-xs text-text-tertiary">{participacao.user?.apelido ?? ''}</p>
-            </div>
-            <Badge
-              variant={participacao.status === 'confirmado' ? 'default' : 'secondary'}
-              className={participacao.status === 'confirmado' ? 'bg-success/10 text-success' : ''}
-            >
-              {formatLabel(participacao.status)}
-            </Badge>
-          </div>
+          <AtivoParticipantCard key={participacao.id} participacao={participacao} />
         ))}
-      </div>
-    </ViewerSection>
+      </ViewerHorizontalScroller>
+    </div>
   );
 }
 
-function DetailsSection({ ativo, local }) {
-  return (
-    <ViewerSection className="bg-container-primary">
-      <ViewerSectionTitle icon={ShieldCheck}>Detalhes</ViewerSectionTitle>
-
-      {ativo.descricao && (
-        <p className="mb-4 text-sm leading-6 text-text-secondary">{ativo.descricao}</p>
-      )}
-
-      <div className="grid grid-cols-2 gap-3">
-        <InfoPill icon={CalendarDays} label="Data" value={formatDate(ativo.dataInicio)} />
-        <InfoPill icon={Clock3} label="Horario" value={formatTimeRange(ativo.dataInicio, ativo.dataFim)} />
-        <InfoPill icon={MapPin} label="Local" value={local?.nome ?? 'Nao informado'} />
-        <InfoPill icon={UserRound} label="Organizador" value={ativo.organizadorNome ?? 'Nao informado'} />
+function AtivoCTA({ participacao, actions, isMutating, onInterest, onConfirm, onCancel }) {
+  if (actions.includes('confirmar') && participacao?.status === 'confirmado') {
+    return (
+      <div className="mx-4">
+        <Button
+          variant="outline"
+          className="w-full text-error hover:bg-error/10 hover:text-error"
+          disabled={isMutating}
+          onClick={onCancel}
+        >
+          Cancelar presenca
+        </Button>
       </div>
+    );
+  }
 
-      {ativo.tags && ativo.tags.length > 0 && (
-        <div className="mt-4 flex flex-wrap gap-2">
-          {ativo.tags.map((tag) => (
-            <Badge key={tag} variant="secondary" className="bg-container-secondary">
-              {tag}
-            </Badge>
-          ))}
-        </div>
-      )}
-    </ViewerSection>
+  if (actions.includes('confirmar')) {
+    return (
+      <div className="mx-4">
+        <Button
+          variant="default"
+          className="w-full"
+          disabled={isMutating}
+          onClick={onConfirm}
+        >
+          <CheckCircle2 className="mr-2 h-4 w-4" />
+          Confirmar presenca
+        </Button>
+      </div>
+    );
+  }
+
+  if (actions.includes('interesse')) {
+    return (
+      <div className="mx-4">
+        <Button
+          variant="outline"
+          className="w-full"
+          disabled={isMutating}
+          onClick={onInterest}
+        >
+          <Heart className="mr-2 h-4 w-4" />
+          Demonstrar Interesse
+        </Button>
+      </div>
+    );
+  }
+
+  return null;
+}
+
+function AtivoSecondaryActions({ ativoId }) {
+  return (
+    <div className="mx-4 flex items-center justify-between gap-2">
+      <Button variant="ghost" size="sm" className="flex-1">
+        <Share2 className="mr-2 h-4 w-4" />
+        Compartilhar
+      </Button>
+      <Button variant="ghost" size="sm" className="flex-1">
+        <Star className="mr-2 h-4 w-4" />
+        Favoritar
+      </Button>
+      <Button variant="ghost" size="sm" className="flex-1">
+        <Flag className="mr-2 h-4 w-4" />
+        Reportar
+      </Button>
+      <Button asChild variant="ghost" size="sm" className="flex-1">
+        <Link to={`/ativos/${ativoId}`}>
+          <MoreHorizontal className="mr-2 h-4 w-4" />
+          Mais
+        </Link>
+      </Button>
+    </div>
   );
 }
 
@@ -276,10 +335,15 @@ export default function AtivoViewer({
   participacoes,
   activeParticipation,
   participationActions,
+  actions,
   isMutating,
   onInterest,
   onConfirm,
   onCancel,
+  onClose,
+  isOwner = false,
+  onTogglePrivacy,
+  onDelete,
   notFound = false,
   error = false,
 }) {
@@ -314,29 +378,33 @@ export default function AtivoViewer({
   ).length;
 
   return (
-    <AppScreen className="gap-5" variant="warm">
-      <Button asChild variant="link" className="w-fit text-sm font-bold">
-        <Link to="/">
-          <ArrowLeft className="h-4 w-4" />
-          Voltar para Home
-        </Link>
-      </Button>
-
-      <AtivoHero ativo={ativo} local={local} organizador={organizador} />
-
-      <ParticipacaoCard
-        ativo={ativo}
-        participacao={activeParticipation}
+    <div className="flex h-full flex-col gap-3 overflow-y-auto pb-4">
+      <AtivoHero ativo={ativo} onClose={onClose} />
+      <AtivoLocationCard local={local} />
+      <AtivoQuorum
         participantesConfirmados={participantesConfirmados}
-        actions={participationActions}
-        isMutating={isMutating}
-        onInterest={onInterest}
-        onConfirm={onConfirm}
-        onCancel={onCancel}
+        minimoParticipantes={ativo.minimoParticipantes ?? 2}
       />
-
-      <ParticipantesSection participacoes={participacoes} />
-      <DetailsSection ativo={ativo} local={local} />
-    </AppScreen>
+      <AtivoOrganizerCard
+        organizador={organizador}
+        isOwner={isOwner}
+        onTogglePrivacy={onTogglePrivacy}
+        onDelete={onDelete}
+      />
+      <AtivoParticipantsCarousel participacoes={participacoes} />
+      <div className="mt-auto">
+        <AtivoCTA
+          participacao={activeParticipation}
+          actions={actions}
+          isMutating={isMutating}
+          onInterest={onInterest}
+          onConfirm={onConfirm}
+          onCancel={onCancel}
+        />
+        <div className="mt-3">
+          <AtivoSecondaryActions ativoId={ativo.id} />
+        </div>
+      </div>
+    </div>
   );
 }
