@@ -11,8 +11,19 @@ export function legacyUserToUser(legacyUser = {}) {
     genero: legacyUser.genero,
     bio: legacyUser.bio,
     preferenciasEsportivas: legacyUser.preferenciasEsportivas ?? [],
-    configuracoesPrivacidade: legacyUser.configuracoesPrivacidade ?? {},
-    configuracoesNotificacao: legacyUser.configuracoesNotificacao ?? {},
+    configuracoesPrivacidade: {
+      perfilPublico: legacyUser.configuracoesPrivacidade?.perfilPublico ?? true,
+      compartilharRetrospectiva: legacyUser.configuracoesPrivacidade?.compartilharRetrospectiva ?? true,
+    },
+    configuracoesNotificacao: {
+      lembreteAtivo: legacyUser.configuracoesNotificacao?.lembreteAtivo ?? true,
+      novidadesLocais: legacyUser.configuracoesNotificacao?.novidadesLocais ?? true,
+    },
+    idioma: legacyUser.idioma ?? 'pt-BR',
+    tema: legacyUser.tema ?? 'claro',
+    isDemo: legacyUser.isDemo ?? false,
+    isAdmin: legacyUser.isAdmin ?? false,
+    status: legacyUser.status ?? 'ativo',
     createdAt: legacyUser.createdAt ?? legacyUser.created_date,
     updatedAt: legacyUser.updatedAt ?? legacyUser.updated_date ?? legacyUser.created_date,
   });

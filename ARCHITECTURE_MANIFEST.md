@@ -64,6 +64,79 @@ Responsabilidades:
 - consultar Retrospectiva;
 - gerenciar dados pessoais, privacidade e notificações.
 
+**Restrições:**
+
+- User não armazena Ativos.
+- User não armazena Participações.
+- User não armazena Zeladorias.
+- User não armazena Retrospectiva.
+
+Esses dados são derivados através das entidades próprias (Ativo, Participacao, Zeladoria, Retrospectiva) utilizando o `userId` como referência.
+
+#### Atributos
+
+##### Identity (Identificação e Perfil)
+
+- `id`: Identificador único do usuário
+- `nome`: Nome completo
+- `foto`: URL da foto/avatar
+- `email`: Endereço de email (usado para login)
+- `telefone`: Número de telefone
+- `dataNascimento`: Data de nascimento
+- `genero`: Gênero (masculino, feminino, nao_informado, outros)
+- `bio`: Biografia/descrição pessoal
+
+##### Preferences (Preferências Esportivas)
+
+- `preferenciasEsportivas`: Array de modalidades favoritas (ex: ['corrida', 'futebol', 'yoga'])
+- Utilizado para recomendações personalizadas na Home e filtros
+
+##### Social (Relacionamentos)
+
+- `amizades`: Lista de IDs de usuários amigos (futuro)
+- `bloqueios`: Lista de IDs de usuários bloqueados (futuro)
+- `convites`: Convites pendentes (futuro)
+
+##### Settings (Configurações)
+
+- `configuracoesPrivacidade`: Objeto com configurações de privacidade
+  - `perfilPublico`: Boolean - Visibilidade do perfil
+  - `compartilharRetrospectiva`: Boolean - Permitir compartilhamento de retrospectiva
+- `configuracoesNotificacao`: Objeto com configurações de notificação
+  - `lembreteAtivo`: Boolean - Lembretes de ativos
+  - `novidadesLocais`: Boolean - Novidades em locais
+- `idioma`: Idioma preferido (futuro, default: 'pt-BR')
+- `tema`: Tema da interface (futuro, default: 'claro')
+
+##### Metadata (Metadados)
+
+- `isDemo`: Boolean - Indica se é usuário demo
+- `isAdmin`: Boolean - Indica se é administrador
+- `status`: Status da conta (ativo, inativo, suspenso)
+- `createdAt`: Data de criação
+- `updatedAt`: Data de última atualização
+
+#### Demo Session
+
+O conceito de Demo Session permite que a aplicação funcione sem autenticação real durante desenvolvimento e demonstração.
+
+Regras:
+
+- existe apenas um `currentUser` ativo por sessão;
+- `currentUser` vive apenas em memória (React State);
+- ausência de login utiliza o usuário demo administrador;
+- cadastro cria um novo User apenas na memória;
+- login altera `currentUser` apenas na memória;
+- reiniciar a aplicação restaura a sessão demo.
+
+Usuário Demo:
+
+- `id`: 'user-demo-admin'
+- `nome`: 'Usuário Demo'
+- `email`: 'demo@ilhaativa.dev'
+- `isDemo`: true
+- `isAdmin`: true
+
 ### Ativo
 
 Representa qualquer oportunidade organizada de prática esportiva ou recreativa que reúna pessoas em um Local e horário específicos.
@@ -546,19 +619,45 @@ Ativo é a entidade central do sistema. Criar Ativo é a ação mais importante 
 
 #### User
 
-- `id`
-- `nome`
-- `foto`
-- `email`
-- `telefone`
-- `dataNascimento`
-- `genero`
-- `bio`
-- `preferenciasEsportivas`
-- `configuracoesPrivacidade`
-- `configuracoesNotificacao`
-- `createdAt`
-- `updatedAt`
+##### Identity
+
+- `id`: Identificador único
+- `nome`: Nome completo
+- `foto`: URL da foto/avatar
+- `email`: Endereço de email
+- `telefone`: Número de telefone
+- `dataNascimento`: Data de nascimento
+- `genero`: Gênero
+- `bio`: Biografia
+
+##### Preferences
+
+- `preferenciasEsportivas`: Array de modalidades favoritas
+
+##### Social
+
+- `amizades`: Lista de IDs de amigos (futuro)
+- `bloqueios`: Lista de IDs bloqueados (futuro)
+- `convites`: Convites pendentes (futuro)
+
+##### Settings
+
+- `configuracoesPrivacidade`: Configurações de privacidade
+  - `perfilPublico`: Boolean
+  - `compartilharRetrospectiva`: Boolean
+- `configuracoesNotificacao`: Configurações de notificação
+  - `lembreteAtivo`: Boolean
+  - `novidadesLocais`: Boolean
+- `idioma`: Idioma preferido (default: 'pt-BR')
+- `tema`: Tema da interface (default: 'claro')
+
+##### Metadata
+
+- `isDemo`: Boolean - Usuário demo
+- `isAdmin`: Boolean - Administrador
+- `status`: Status da conta (ativo, inativo, suspenso)
+- `createdAt`: Data de criação
+- `updatedAt`: Data de atualização
 
 #### Ativo
 

@@ -1,37 +1,14 @@
-import { UserRepository } from './repository';
+import {
+  login as demoLogin,
+  logout as demoLogout,
+  register as demoRegister,
+  getCurrentUser,
+} from '@/domain/user/demoSession';
 
-/**
- * Official authentication service.
- * Provides login, logout, registration, and session management.
- */
 export class AuthService {
-  /**
-   * Authenticate a user with credentials.
-   * @param {Object} credentials - User email and password.
-   * @returns {Promise<Object>} Session object.
-   */
   static async login(credentials) {
-    // Official login logic: validate credentials against official data source
-    const officialUser = await UserRepository.getByEmail(credentials.email);
-    if (!officialUser) {
-      throw new Error('Credenciais inválidas');
-    }
-    return {
-      user: officialUser,
-      isAuthenticated: true,
-      isLoading: false,
-      error: null,
-      preferenciasPendentes: officialUser.preferenciasEsportivas.length === 0,
-    };
-  }
+    const user = demoLogin(credentials.email);
 
-  /**
-   * Register a new user.
-   * @param {Object} userData - User registration data.
-   * @returns {Promise<Object>} Created user.
-   */
-  static async register(userData) {
-    const user = await UserRepository.create(userData);
     return {
       user,
       isAuthenticated: true,
@@ -41,27 +18,32 @@ export class AuthService {
     };
   }
 
-  /**
-   * Retrieve the current session.
-   * @returns {Promise<Object>} Session object.
-   */
-  static async getCurrentSession() {
-    // Official session retrieval
+  static async register(userData) {
+    const user = demoRegister(userData);
+
     return {
-      user: null,
-      isAuthenticated: false,
+      user,
+      isAuthenticated: true,
       isLoading: false,
       error: null,
-      preferenciasPendentes: false,
+      preferenciasPendentes: user.preferenciasEsportivas.length === 0,
     };
   }
 
-  /**
-   * Logout the current user.
-   * @returns {Promise<void>}
-   */
+  static async getCurrentSession() {
+    const user = getCurrentUser();
+
+    return {
+      user,
+      isAuthenticated: Boolean(user?.id),
+      isLoading: false,
+      error: null,
+      preferenciasPendentes: user ? user.preferenciasEsportivas.length === 0 : true,
+    };
+  }
+
   static async logout() {
-    // Official logout implementation
+    demoLogout();
     return Promise.resolve();
   }
 }

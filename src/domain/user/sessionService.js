@@ -9,7 +9,7 @@ export const SessionService = {
       isAuthenticated: Boolean(user?.id),
       isLoading: false,
       error: null,
-      preferenciasPendentes: user.preferenciasEsportivas.length === 0,
+      preferenciasPendentes: user ? user.preferenciasEsportivas.length === 0 : true,
     };
   },
 };

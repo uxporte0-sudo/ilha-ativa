@@ -1,15 +1,31 @@
 import { officialDataSource } from '@/data/officialDataSource';
 import { createLocal } from '@/domain/local/model';
+import { TrailRepository } from '@/domain/trail/repository';
+import { trailToLocal } from '@/domain/local/adapters';
 
 export const LocalRepository = {
   async list() {
     const locais = await officialDataSource.locais.list();
-    return locais.map(createLocal);
+    
+    let trilhasComoLocais = [];
+    try {
+      const trilhas = await TrailRepository.getAll();
+      trilhasComoLocais = trilhas.map(trailToLocal);
+    } catch (e) {
+      console.warn('[LocalRepository] Falha ao carregar trilhas:', e);
+    }
+    
+    const locaisConvertidos = locais.map(createLocal);
+    
+    return [...locaisConvertidos, ...trilhasComoLocais];
   },
 
   async getById(localId) {
     const local = await officialDataSource.locais.get(localId);
-    return local ? createLocal(local) : null;
+    if (local) return createLocal(local);
+    
+    const trilha = await TrailRepository.getById(localId);
+    return trilha ? trailToLocal(trilha) : null;
   },
 
   async search({ termo = '', categoria } = {}) {

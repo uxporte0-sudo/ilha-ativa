@@ -21,9 +21,9 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AgendaService } from '@/domain/participacao/agendaService';
-import { ParticipacaoService } from '@/domain/participacao/service';
 import { assertOfficialQueryKey, queryKeys } from '@/domain/shared/queryKeys';
 import { SessionService } from '@/domain/user/sessionService';
+import { UserRelationships } from '@/domain/user/relationships';
 import { cn } from '@/lib/utils';
 
 function getInitials(name = '') {
@@ -325,7 +325,7 @@ export default function AccountScreen() {
   const user = sessionQuery.data?.user;
   const participacoesQuery = useQuery({
     queryKey: assertOfficialQueryKey(queryKeys.participacoes.byUser(user?.id ?? 'aguardando-user')),
-    queryFn: () => ParticipacaoService.listByUser(user.id),
+    queryFn: () => UserRelationships.getParticipacoes(user.id),
     enabled: Boolean(user?.id),
   });
 

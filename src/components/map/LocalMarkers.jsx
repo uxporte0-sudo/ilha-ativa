@@ -20,19 +20,21 @@ export default function LocalMarkers({ featureCollection, map, onOpenLocal }) {
 
   return (
     <>
-      {featureCollection.features.map((feature) => {
-        const [longitude, latitude] = feature.geometry.coordinates;
-        return (
-          <LocalPin
-            key={feature.properties.id || longitude + '-' + latitude}
-            map={map}
-            latitude={latitude}
-            longitude={longitude}
-            entity={feature.properties}
-            onOpen={onOpenLocal}
-          />
-        );
-      })}
+      {featureCollection.features
+        .filter((feature) => feature.properties?.tipoCategoria !== 'trilha')
+        .map((feature) => {
+          const [longitude, latitude] = feature.geometry.coordinates;
+          return (
+            <LocalPin
+              key={feature.properties.id || longitude + '-' + latitude}
+              map={map}
+              latitude={latitude}
+              longitude={longitude}
+              entity={feature.properties}
+              onOpen={onOpenLocal}
+            />
+          );
+        })}
     </>
   );
 }

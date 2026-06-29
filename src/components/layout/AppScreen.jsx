@@ -22,6 +22,7 @@ export default function AppScreen({ className, children, variant = 'default', fu
   }[variant];
 
   if (fullscreen) {
+    console.log('[CreateAtivo] AppScreen fullscreen=true');
     return (
       <section className={cn('h-full max-h-full w-full overflow-hidden text-text-primary', variantClass, className)}>
         {children}

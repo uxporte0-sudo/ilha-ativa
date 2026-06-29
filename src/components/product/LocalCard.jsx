@@ -1,8 +1,13 @@
-import { ImageIcon } from 'lucide-react';
+import { Mountain, ImageIcon } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 
 export default function LocalCard({ local, className, onOpen }) {
+  const isTrail = local.tipoCategoria === 'trilha';
+  const locationInfo = isTrail 
+    ? (local.cidade || 'Ilhabela')
+    : [local.endereco, local.bairro].filter(Boolean).join(', ') || (local.cidade || '');
+
   if (onOpen) {
     return (
       <button
@@ -17,13 +22,17 @@ export default function LocalCard({ local, className, onOpen }) {
           {local.imagem ? (
             <img src={local.imagem} alt={local.nome} className="h-full w-full object-cover" />
           ) : (
-            <ImageIcon className="h-7 w-7 text-text-secondary" />
+            isTrail 
+              ? <Mountain className="h-7 w-7 text-text-secondary" />
+              : <ImageIcon className="h-7 w-7 text-text-secondary" />
           )}
         </div>
         <div className="flex min-w-0 flex-1 flex-col justify-center">
           <h3 className="line-clamp-2 text-sm font-bold leading-4 text-text-primary">{local.nome}</h3>
-          <p className="mt-1 truncate text-[11px] leading-4 text-text-secondary">{local.endereco ?? 'Endereco'}</p>
-          <p className="truncate text-[11px] leading-4 text-text-tertiary">{local.bairro ?? 'Bairro'}{'| '}{local.cidade ?? 'Cidade'}</p>
+          <p className="mt-1 truncate text-[11px] leading-4 text-text-secondary">{locationInfo}</p>
+          {!isTrail && (
+            <p className="truncate text-[11px] leading-4 text-text-tertiary">{local.bairro ?? 'Bairro'}{'| '}{local.cidade ?? 'Cidade'}</p>
+          )}
         </div>
       </button>
     );
@@ -41,13 +50,17 @@ export default function LocalCard({ local, className, onOpen }) {
         {local.imagem ? (
           <img src={local.imagem} alt={local.nome} className="h-full w-full object-cover" />
         ) : (
-          <ImageIcon className="h-7 w-7 text-text-secondary" />
+          isTrail 
+            ? <Mountain className="h-7 w-7 text-text-secondary" />
+            : <ImageIcon className="h-7 w-7 text-text-secondary" />
         )}
       </div>
       <div className="flex min-w-0 flex-1 flex-col justify-center">
         <h3 className="line-clamp-2 text-sm font-bold leading-4 text-text-primary">{local.nome}</h3>
-        <p className="mt-1 truncate text-[11px] leading-4 text-text-secondary">{local.endereco ?? 'Endereco'}</p>
-        <p className="truncate text-[11px] leading-4 text-text-tertiary">{local.bairro ?? 'Bairro'}{'| '}{local.cidade ?? 'Cidade'}</p>
+        <p className="mt-1 truncate text-[11px] leading-4 text-text-secondary">{locationInfo}</p>
+        {!isTrail && (
+          <p className="truncate text-[11px] leading-4 text-text-tertiary">{local.bairro ?? 'Bairro'}{'| '}{local.cidade ?? 'Cidade'}</p>
+        )}
       </div>
     </Link>
   );

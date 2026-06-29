@@ -1,4 +1,5 @@
 import { createLocal } from '@/domain/local/model';
+import { DEFAULT_CREATED_AT } from '@/domain/shared/date';
 
 const DEFAULT_COORDINATES = {
   latitude: -23.7785,
@@ -22,5 +23,28 @@ export function courtToLocal(court = {}) {
     status: court.status,
     createdAt: court.createdAt ?? court.created_date,
     updatedAt: court.updatedAt ?? court.updated_date ?? court.created_date,
+  });
+}
+
+export function trailToLocal(trail = {}) {
+  const coords = trail.geometry?.features?.[0]?.geometry?.coordinates?.[0] || [DEFAULT_COORDINATES.longitude, DEFAULT_COORDINATES.latitude];
+  
+  return createLocal({
+    id: trail.id,
+    nome: trail.nome,
+    descricao: trail.descricao || '',
+    categoria: 'trilha',
+    tipoCategoria: 'trilha',
+    latitude: coords[1],
+    longitude: coords[0],
+    endereco: '',
+    bairro: '',
+    cidade: 'Ilhabela',
+    fotos: undefined,
+    acessibilidade: undefined,
+    estrutura: undefined,
+    status: 'ativo',
+    createdAt: DEFAULT_CREATED_AT,
+    updatedAt: DEFAULT_CREATED_AT,
   });
 }

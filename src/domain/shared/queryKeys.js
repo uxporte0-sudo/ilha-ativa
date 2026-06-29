@@ -1,6 +1,7 @@
 export const queryKeys = {
   user: {
     current: () => ['user', 'current'],
+    all: () => ['users'],
     byId: (userId) => ['user', userId],
   },
   ativos: {

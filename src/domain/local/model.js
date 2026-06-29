@@ -6,6 +6,7 @@ export function createLocal(data = {}) {
     nome: data.nome,
     descricao: data.descricao,
     categoria: data.categoria,
+    tipoCategoria: data.tipoCategoria || 'local',
     latitude: data.latitude,
     longitude: data.longitude,
     endereco: data.endereco,

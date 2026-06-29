@@ -27,6 +27,7 @@ export function localToFeature(local) {
       id: local.id,
       nome: local.nome,
       categoria: local.categoria,
+      tipoCategoria: local.tipoCategoria || 'local',
       esportes: local.esportes ?? [],
       endereco: local.endereco,
       bairro: local.bairro,

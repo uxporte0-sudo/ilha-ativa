@@ -12,9 +12,9 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AtivoService } from '@/domain/ativo/service';
 import { LocalService } from '@/domain/local/service';
-import { ParticipacaoService } from '@/domain/participacao/service';
 import { assertOfficialQueryKey, queryKeys } from '@/domain/shared/queryKeys';
 import { SessionService } from '@/domain/user/sessionService';
+import { UserRelationships } from '@/domain/user/relationships';
 
 function byStartDate(left, right) { return new Date(left.dataHoraInicio).getTime() - new Date(right.dataHoraInicio).getTime(); }
 function isDiscoverableAtivo(ativo) { return ['publicado', 'confirmado'].includes(ativo.status); }
@@ -165,7 +165,11 @@ export default function HomeScreen() {
   const sessionQuery = useQuery({ queryKey: assertOfficialQueryKey(queryKeys.user.current()), queryFn: () => SessionService.getSession() });
   const ativosQuery = useQuery({ queryKey: assertOfficialQueryKey(queryKeys.ativos.all()), queryFn: () => AtivoService.list() });
   const locaisQuery = useQuery({ queryKey: assertOfficialQueryKey(queryKeys.locais.trending()), queryFn: () => LocalService.listTrending(6) });
-  const participacoesQuery = useQuery({ queryKey: assertOfficialQueryKey(queryKeys.participacoes.byUser(sessionQuery.data?.user?.id ?? 'aguardando-user')), queryFn: () => ParticipacaoService.listByUser(sessionQuery.data.user.id), enabled: Boolean(sessionQuery.data?.user?.id) });
+  const participacoesQuery = useQuery({
+    queryKey: assertOfficialQueryKey(queryKeys.participacoes.byUser(sessionQuery.data?.user?.id ?? 'aguardando-user')),
+    queryFn: () => UserRelationships.getParticipacoes(sessionQuery.data.user.id),
+    enabled: Boolean(sessionQuery.data?.user?.id),
+  });
 
   const isLoading = sessionQuery.isLoading || ativosQuery.isLoading || locaisQuery.isLoading || participacoesQuery.isLoading;
   const hasError = sessionQuery.isError || ativosQuery.isError || locaisQuery.isError || participacoesQuery.isError;

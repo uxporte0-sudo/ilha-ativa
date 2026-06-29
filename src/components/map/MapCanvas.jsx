@@ -1,10 +1,11 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useMemo } from 'react';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import './MapCanvas.css';
-import { useLocalLayer } from './LocalLayer';
+import { useLocalLayer, localToFeature } from './LocalLayer';
 import LocalMarkers from './LocalMarkers';
 import AtivoMarkers from './AtivoMarkers';
+import TrailLineLayer from './TrailLayer';
 
 const ILHABELA_CENTER = [-45.3436, -23.7738];
 
@@ -21,15 +22,28 @@ const ILHABELA_CENTER = [-45.3436, -23.7738];
  * @param {Object} props
  * @param {string} props.className - Classes CSS adicionais
  * @param {Array} props.ativos - Lista de Ativos
- * @param {Array} props.locais - Lista de Locais
+ * @param {Array} props.locais - Lista de Locais (inclui trilhas convertidas)
+ * @param {Array} props.trilhas - Lista de Trilhas (para geometria)
  * @param {Function} props.onOpenLocal - Callback (entity) ao clicar pin
  * @param {Function} props.onOpenAtivo - Callback (ativo) ao clicar pin
+ * @param {Function} props.onSelectTrail - Callback (trail) ao clicar na trilha
  */
-export default function MapCanvas({ className, ativos, locais, onOpenLocal, onOpenAtivo }) {
+export default function MapCanvas({ className, ativos, locais, trilhas, onOpenLocal, onOpenAtivo, onSelectTrail }) {
   const containerRef = useRef(null);
   const mapRef = useRef(null);
   const [mapInstance, setMapInstance] = useState(null);
-  const { featureCollection, loading, error } = useLocalLayer();
+  const { featureCollection: baseFeatureCollection, loading, error } = useLocalLayer();
+
+  const featureCollection = useMemo(() => {
+    const trailFeatures = locais
+      .filter(l => l.tipoCategoria === 'trilha')
+      .map(localToFeature);
+    
+    return {
+      type: 'FeatureCollection',
+      features: [...baseFeatureCollection.features, ...trailFeatures],
+    };
+  }, [baseFeatureCollection, locais]);
 
   useEffect(() => {
     if (mapRef.current || !containerRef.current) return;
@@ -89,6 +103,13 @@ export default function MapCanvas({ className, ativos, locais, onOpenLocal, onOp
     }
   }, []);
 
+  // Log de diagnóstico: MapCanvas
+  console.groupCollapsed('[Trail] MapCanvas');
+  console.log('[Trail] map existe?', !!mapInstance);
+  console.log('[Trail] quantidade de trilhas:', trilhas?.length ?? 0);
+  console.log('[Trail] trilhas:', trilhas?.map(t => ({ id: t.id, nome: t.nome, geometriaValida: !!t.geometria })));
+  console.groupEnd();
+
   return (
     <>
       <div
@@ -97,6 +118,7 @@ export default function MapCanvas({ className, ativos, locais, onOpenLocal, onOp
       />
       <LocalMarkers featureCollection={featureCollection} map={mapInstance} onOpenLocal={onOpenLocal} />
       <AtivoMarkers ativos={ativos} locais={locais} map={mapInstance} onOpenAtivo={onOpenAtivo} />
+      <TrailLineLayer trails={trilhas} map={mapInstance} onSelectTrail={onSelectTrail} />
     </>
   );
 }

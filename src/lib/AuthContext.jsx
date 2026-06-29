@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { SessionService } from '@/domain/user/sessionService';
 import { UserRepository } from '@/domain/user/repository';
 import { AuthService } from '@/domain/user/AuthService';
+import { initDemoSession, subscribe } from '@/domain/user/demoSession';
 
 const AuthContext = createContext();
 const PUBLIC_SETTINGS = { id: 'official-mvp', public_settings: {} };
@@ -69,7 +70,19 @@ export const AuthProvider = ({ children }) => {
   const navigateToLogin = () => {};
 
   useEffect(() => {
-    checkUserAuth();
+    const initializeSession = async () => {
+      const demoUser = initDemoSession();
+      setUser(demoUser);
+      setIsLoadingAuth(false);
+    };
+
+    initializeSession();
+
+    const unsubscribe = subscribe((newUser) => {
+      setUser(newUser);
+    });
+
+    return unsubscribe;
   }, []);
 
   return (

@@ -76,6 +76,10 @@ export default function PresentationOverlay() {
           </h1>
 
           <p className="mb-8 text-text-secondary leading-relaxed">
+            O IlhAtiva ainda está em desenvolvimento
+            Pedimos desculpas pelos errors
+            <br />
+            <br />
             Para uma experiência mais imersiva durante esta demonstração,
             <br />
             recomendamos utilizar o modo tela cheia.

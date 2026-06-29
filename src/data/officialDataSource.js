@@ -1,11 +1,21 @@
 import { officialSeeds } from '@/data/officialSeeds';
+import { createUser, createDemoUser } from '@/domain/user/model';
 
 function clone(data) {
   return JSON.parse(JSON.stringify(data));
 }
 
 function createInitialData() {
-  return clone(officialSeeds);
+  const seeds = clone(officialSeeds);
+
+  const demoUser = createDemoUser();
+  const seedUsers = (seeds.users || []).map(createUser);
+
+  return {
+    ...seeds,
+    users: [demoUser, ...seedUsers],
+    amizades: [],
+  };
 }
 
 let currentData = createInitialData();
@@ -119,4 +129,5 @@ export const officialDataSource = {
   locais: createCollectionApi('locais'),
   zeladorias: createCollectionApi('zeladorias'),
   retrospectivas: createCollectionApi('retrospectivas'),
+  amizades: createCollectionApi('amizades'),
 };

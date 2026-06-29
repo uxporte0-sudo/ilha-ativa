@@ -15,7 +15,7 @@ export function createAtivo(data = {}) {
     minimoParticipantes: data.minimoParticipantes,
     maximoParticipantes: data.maximoParticipantes,
     nivelDificuldade: data.nivelDificuldade,
-    privacidade: data.privacidade ?? 'publico',
+    privacidade: data.privacidade ?? 'aberto',
     faixaEtaria: data.faixaEtaria,
     generoPermitido: data.generoPermitido,
     recomendacoes: data.recomendacoes,

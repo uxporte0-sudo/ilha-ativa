@@ -1,15 +1,19 @@
-﻿import { useState, useCallback } from 'react';
+﻿import { useState, useCallback, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { List, Map, SlidersHorizontal } from 'lucide-react';
 import AppScreen from '@/components/layout/AppScreen';
 import MapCanvas from '@/components/map/MapCanvas';
 import LocalFloatingWindow from '@/components/local/LocalFloatingWindow';
 import AtivoFloatingWindow from '@/components/ativo/AtivoFloatingWindow';
+import TrailFloatingWindow from '@/components/trail/TrailFloatingWindow';
 import SearchField from '@/components/product/SearchField';
 import LocalCard from '@/components/product/LocalCard';
 import AtivoHomeCard from '@/components/product/AtivoHomeCard';
+import TrailCard from '@/components/product/TrailCard';
 import { LocalService } from '@/domain/local/service';
 import { AtivoService } from '@/domain/ativo/service';
+import { TrailService } from '@/domain/trail/model';
+import { trailToLocal } from '@/domain/local/adapters';
 import { Button } from '@/components/ui/button';
 
 const SUGGESTION_BADGES = [
@@ -23,6 +27,7 @@ const SUGGESTION_BADGES = [
 export default function MapScreen() {
   const [selectedLocalId, setSelectedLocalId] = useState(null);
   const [selectedAtivoId, setSelectedAtivoId] = useState(null);
+  const [selectedTrailId, setSelectedTrailId] = useState(null);
   const [searchValue, setSearchValue] = useState('');
   const [viewMode, setViewMode] = useState('mapa');
   const [activeTab, setActiveTab] = useState('lugares');
@@ -43,6 +48,17 @@ export default function MapScreen() {
     queryFn: () => AtivoService.list(),
   });
 
+  const trilhasQuery = useQuery({
+    queryKey: ['trilhas', 'discovery'],
+    queryFn: () => TrailService.list(),
+  });
+
+  const selectedTrailQuery = useQuery({
+    queryKey: ['trail', selectedTrailId],
+    queryFn: () => TrailService.getById(selectedTrailId),
+    enabled: !!selectedTrailId,
+  });
+
   const handleOpenLocal = useCallback((local) => {
     setSelectedLocalId(local.id);
   }, []);
@@ -53,6 +69,10 @@ export default function MapScreen() {
     console.log('[ATIVO_OPEN] selectedAtivoId updated', { value: ativo.id });
   }, []);
 
+  const handleSelectTrail = useCallback((trail) => {
+    setSelectedTrailId(trail.id);
+  }, []);
+
   const handleCloseLocal = useCallback(() => {
     setSelectedLocalId(null);
   }, []);
@@ -61,8 +81,18 @@ export default function MapScreen() {
     setSelectedAtivoId(null);
   }, []);
 
-  const locais = locaisQuery.data ?? [];
+  const handleCloseTrail = useCallback(() => {
+    setSelectedTrailId(null);
+  }, []);
+
+const locaisBase = locaisQuery.data ?? [];
   const ativos = ativosQuery.data ?? [];
+  const trilhas = trilhasQuery.data ?? [];
+
+  const locais = useMemo(() => {
+    const trilhasComoLocais = trilhas.map(trailToLocal);
+    return [...locaisBase, ...trilhasComoLocais];
+  }, [locaisBase, trilhas]);
 
   return (
     <AppScreen variant="warm" fullscreen>
@@ -101,8 +131,10 @@ export default function MapScreen() {
                 <MapCanvas
                   onOpenLocal={handleOpenLocal}
                   onOpenAtivo={handleOpenAtivo}
+                  onSelectTrail={handleSelectTrail}
                   ativos={ativos}
                   locais={locais}
+                  trilhas={trilhas}
                 />
               </div>
 
@@ -224,6 +256,13 @@ export default function MapScreen() {
           <AtivoFloatingWindow
             ativoId={selectedAtivoId}
             onClose={handleCloseAtivo}
+          />
+        )}
+
+        {selectedTrailId && selectedTrailQuery.data && (
+          <TrailFloatingWindow
+            trail={selectedTrailQuery.data}
+            onClose={handleCloseTrail}
           />
         )}
       </div>
