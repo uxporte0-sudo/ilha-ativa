@@ -971,14 +971,14 @@ export default function CreateAtivoScreen() {
 
   return (
     <AppScreen className="flex flex-col" variant="warm" fullscreen>
-      <div className="flex flex-col gap-2 px-4 py-3">
+      <div className="flex flex-col gap-2">
         <FlowHeader
           title="Criar Ativo"
           subtitle="Contribuindo para uma comunidade ativa"
           icon={Plus}
           onBack={handleBack}
           onAction={() => {}}
-          actionLabel={<Plus className="h-4 w-4" />}
+          actionIcon={Plus}
         />
         
         <StepIndicator currentStep={currentStep} />

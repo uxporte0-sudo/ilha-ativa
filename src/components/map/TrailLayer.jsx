@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 /**
  * Hook useTrailLayer
@@ -40,21 +40,69 @@ export function useTrailLayer(trails) {
 }
 
 /**
+ * Verifica se a instância do mapa ainda está funcional.
+ * Não confia apenas em `if (map)` pois o objeto pode existir
+ * enquanto sua estrutura interna já foi desmontada por map.remove().
+ */
+function isMapAlive(map) {
+  return (
+    map &&
+    typeof map.getLayer === 'function' &&
+    typeof map.getSource === 'function' &&
+    typeof map.removeLayer === 'function' &&
+    typeof map.removeSource === 'function' &&
+    typeof map.off === 'function' &&
+    map.style != null
+  );
+}
+
+/**
  * TrailLineLayer
  *
  * Componente que renderiza as trilhas como Polyline no mapa.
  * Utiliza diretamente o FeatureCollection do dominio sem reconstruir geometrias.
  */
 export default function TrailLineLayer({ trails, map, onSelectTrail }) {
+  const cleanedUpRef = useRef(false);
+
   useEffect(() => {
     if (!map || !trails || trails.length === 0) {
       return;
     }
 
+    cleanedUpRef.current = false;
+
     const sourceId = 'trails-source';
     const layerId = 'trails-layer';
 
+    // Referências estáveis para os handlers — necessárias para remover listeners
+    const handleClick = (e) => {
+      const feature = e.features?.[0];
+      if (feature && onSelectTrail) {
+        const trailId = feature.properties.trailId;
+        const trail = trails.find((t) => t.id === trailId);
+        if (trail) {
+          onSelectTrail(trail);
+        }
+      }
+    };
+
+    const handleMouseEnter = () => {
+      if (isMapAlive(map)) {
+        map.getCanvas().style.cursor = 'pointer';
+      }
+    };
+
+    const handleMouseLeave = () => {
+      if (isMapAlive(map)) {
+        map.getCanvas().style.cursor = '';
+      }
+    };
+
     const handleMapLoad = () => {
+      if (cleanedUpRef.current) return;
+      if (!isMapAlive(map)) return;
+
       try {
         // Criar FeatureCollection combinando todas as trilhas
         // Cada trail.geometria ja e um FeatureCollection completo do dominio
@@ -79,6 +127,8 @@ export default function TrailLineLayer({ trails, map, onSelectTrail }) {
           features: allFeatures,
         };
 
+        if (!isMapAlive(map)) return;
+
         // Source para trilhas
         if (!map.getSource(sourceId)) {
           map.addSource(sourceId, {
@@ -88,6 +138,8 @@ export default function TrailLineLayer({ trails, map, onSelectTrail }) {
         } else {
           map.getSource(sourceId).setData(geojsonData);
         }
+
+        if (!isMapAlive(map)) return;
 
         // Layer de linha para trilhas
         if (!map.getLayer(layerId)) {
@@ -103,25 +155,14 @@ export default function TrailLineLayer({ trails, map, onSelectTrail }) {
           });
         }
 
+        if (!isMapAlive(map)) return;
+
         // Click handler
-        map.on('click', layerId, (e) => {
-          const feature = e.features?.[0];
-          if (feature && onSelectTrail) {
-            const trailId = feature.properties.trailId;
-            const trail = trails.find((t) => t.id === trailId);
-            if (trail) {
-              onSelectTrail(trail);
-            }
-          }
-        });
+        map.on('click', layerId, handleClick);
 
         // Cursor pointer
-        map.on('mouseenter', layerId, () => {
-          map.getCanvas().style.cursor = 'pointer';
-        });
-        map.on('mouseleave', layerId, () => {
-          map.getCanvas().style.cursor = '';
-        });
+        map.on('mouseenter', layerId, handleMouseEnter);
+        map.on('mouseleave', layerId, handleMouseLeave);
       } catch (err) {
         console.error('[Trail] ERRO:', err);
       }
@@ -134,11 +175,35 @@ export default function TrailLineLayer({ trails, map, onSelectTrail }) {
     }
 
     return () => {
-      if (map && map.getLayer(layerId)) {
-        map.removeLayer(layerId);
+      cleanedUpRef.current = true;
+
+      // Remove listeners primeiro — map.off é seguro mesmo se o mapa estiver parcialmente destruído,
+      // mas verificamos isMapAlive para evitar crash em mapas totalmente destruídos
+      try {
+        if (isMapAlive(map)) {
+          map.off('click', layerId, handleClick);
+          map.off('mouseenter', layerId, handleMouseEnter);
+          map.off('mouseleave', layerId, handleMouseLeave);
+        }
+      } catch (e) {
+        // Silencioso — cleanup deve ser idempotente
       }
-      if (map && map.getSource(sourceId)) {
-        map.removeSource(sourceId);
+
+      // Remover layer e source com validação defensiva
+      try {
+        if (isMapAlive(map) && map.getLayer(layerId)) {
+          map.removeLayer(layerId);
+        }
+      } catch (e) {
+        // Silencioso — cleanup deve ser idempotente
+      }
+
+      try {
+        if (isMapAlive(map) && map.getSource(sourceId)) {
+          map.removeSource(sourceId);
+        }
+      } catch (e) {
+        // Silencioso — cleanup deve ser idempotente
       }
     };
   }, [map, trails, onSelectTrail]);

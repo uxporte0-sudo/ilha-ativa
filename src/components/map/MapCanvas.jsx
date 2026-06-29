@@ -94,9 +94,17 @@ export default function MapCanvas({ className, ativos, locais, trilhas, onOpenLo
         if (resizeObserver) {
           resizeObserver.disconnect();
         }
-        map.remove();
+        // Limpa a referência ANTES de destruir o mapa.
+        // Isso permite que componentes filhos (TrailLayer, LocalMarkers, AtivoMarkers)
+        // detectem que o mapa não está mais disponível durante seus próprios cleanups,
+        // que executam após este cleanup (ordem pai→filho no unmount do React).
         mapRef.current = null;
         setMapInstance(null);
+        try {
+          map.remove();
+        } catch (e) {
+          // Silencioso — cleanup deve ser idempotente
+        }
       };
     } catch (e) {
       console.error('[MAP] initialization error:', e);

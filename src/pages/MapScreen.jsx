@@ -9,7 +9,6 @@ import TrailFloatingWindow from '@/components/trail/TrailFloatingWindow';
 import SearchField from '@/components/product/SearchField';
 import LocalCard from '@/components/product/LocalCard';
 import AtivoHomeCard from '@/components/product/AtivoHomeCard';
-import TrailCard from '@/components/product/TrailCard';
 import { LocalService } from '@/domain/local/service';
 import { AtivoService } from '@/domain/ativo/service';
 import { TrailService } from '@/domain/trail/model';
